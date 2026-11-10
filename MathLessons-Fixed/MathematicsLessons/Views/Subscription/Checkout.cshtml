@@ -1,0 +1,16 @@
+@model MathematicsLessons.Infrastructure.Data.Entities.Sub
+@{
+    ViewData["Title"] = "Плащане";
+    var cycle = ViewBag.Cycle as string ?? "Monthly";
+    var amount = ViewBag.Amount as decimal? ?? Model.PricePerMonth;
+}
+<div class="card-soft p-4 mx-auto" style="max-width:420px">
+    <h1 class="h4">Плащане</h1>
+    <p>@Model.Type · @cycle</p>
+    <p class="fs-2 fw-bold text-primary">@amount.ToString("0.00") лв</p>
+    <p class="small text-muted">Симулирано плащане за дипломния проект – не се тегли реална карта.</p>
+    <form asp-action="Pay" method="post">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-accent w-100">Плати и активирай</button>
+    </form>
+</div>

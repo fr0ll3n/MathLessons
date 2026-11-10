@@ -1,0 +1,10 @@
+@model MathematicsLessons.Infrastructure.Data.Entities.Exercise
+@{ ViewData["Title"] = "Practice"; }
+<h1 class="h3">Practice</h1>
+<p>@Model.Question</p>
+<form asp-action="Submit" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.Id" />
+    <input name="studentAnswer" class="form-control mb-2" required />
+    <button class="btn btn-primary">Submit</button>
+</form>

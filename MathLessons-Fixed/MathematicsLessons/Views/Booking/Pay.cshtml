@@ -1,0 +1,21 @@
+@{
+    ViewData["Title"] = "Плащане на сесия";
+    var pending = ViewBag.Pending as MathematicsLessons.Controllers.PendingBookDto;
+}
+@if (pending == null)
+{
+    <p>Няма чакаща резервация.</p>
+}
+else
+{
+    <div class="card-soft p-4 mx-auto" style="max-width:420px">
+        <h1 class="h4">Плащане</h1>
+        <p>@pending.PlanName · @pending.Date.ToString("g")</p>
+        <p class="fs-2 fw-bold text-primary">@pending.Price.ToString("0.00") лв</p>
+        <p class="small text-muted">Симулирано плащане.</p>
+        <form asp-action="ConfirmPayment" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-accent w-100">Плати и запази</button>
+        </form>
+    </div>
+}

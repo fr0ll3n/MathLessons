@@ -1,0 +1,18 @@
+@model List<MathematicsLessons.Infrastructure.Data.Entities.Notification>
+@{ ViewData["Title"] = "Notifications"; }
+<h1 class="h3 mb-3">Notifications</h1>
+<form asp-action="MarkAllRead" method="post" class="mb-3">@Html.AntiForgeryToken()<button class="btn btn-sm btn-outline-secondary">Mark all read</button></form>
+@foreach (var n in Model)
+{
+    <div class="border rounded p-3 mb-2 @(n.IsRead ? "opacity-50" : "")">
+        <strong>@n.Title</strong>
+        <div class="small text-muted">@n.CreatedAt.ToLocalTime().ToString("dd MMM HH:mm")</div>
+        <p class="mb-1">@n.Body</p>
+        @if (!string.IsNullOrEmpty(n.Link)) { <a href="@n.Link" class="small">Open</a> }
+        @if (!n.IsRead)
+        {
+            <form asp-action="MarkRead" method="post" class="d-inline">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@n.Id" /><button class="btn btn-sm btn-link">Mark read</button></form>
+        }
+    </div>
+}
+@if (!Model.Any()) { <p class="text-muted">No notifications yet.</p> }

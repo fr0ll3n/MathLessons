@@ -1,0 +1,13 @@
+@model List<MathematicsLessons.Infrastructure.Data.Entities.Level>
+@{ ViewData["Title"] = "Courses dashboard"; }
+<h1 class="h3">Your courses (@ViewBag.UserTier)</h1>
+<ul class="list-group">
+@foreach (var l in Model.OrderBy(x => x.SortOrder))
+{
+    <li class="list-group-item d-flex justify-content-between">
+        <span>@l.Name — @l.GradeRange</span>
+        <a class="btn btn-sm btn-outline-primary" asp-action="LessonsByLevel" asp-route-id="@l.Id">Lessons</a>
+    </li>
+}
+</ul>
+<p class="mt-3"><a asp-controller="Classroom" asp-action="Index">Open full classroom (with unlocks)</a></p>

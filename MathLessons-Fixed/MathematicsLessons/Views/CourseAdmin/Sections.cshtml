@@ -1,0 +1,19 @@
+@model List<MathematicsLessons.Infrastructure.Data.Entities.Topic>
+@{
+  ViewData["Title"] = "Sections";
+  var course = ViewBag.Course as MathematicsLessons.Infrastructure.Data.Entities.Level;
+}
+<h1>Sections — @course?.Name</h1>
+<p><a asp-action="CreateSection" asp-route-courseId="@course?.Id">Add section</a> | <a asp-action="Details" asp-route-id="@course?.Id">Course</a></p>
+<table class="table">
+@foreach (var s in Model) {
+<tr>
+<td>@s.SortOrder</td><td>@s.Name</td><td>@s.Lessons.Count lessons</td>
+<td>
+<a asp-action="Lessons" asp-route-sectionId="@s.Id">Lessons</a> |
+<a asp-action="EditSection" asp-route-id="@s.Id">Edit</a>
+<form asp-action="DeleteSection" method="post" class="d-inline">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@s.Id" /><button type="submit">Delete</button></form>
+</td>
+</tr>
+}
+</table>

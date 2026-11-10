@@ -1,0 +1,31 @@
+@page
+@model MathematicsLessons.Areas.Identity.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Log in";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+<div class="auth-wrap">
+    <div class="card">
+        <div class="card-body p-4">
+            <h1 class="h4 mb-1">Log in</h1>
+            <p class="small text-muted mb-3">Use your email and password.</p>
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+                <div class="mb-3">
+                    <label class="form-label" asp-for="Input.Email">Email</label>
+                    <input asp-for="Input.Email" class="form-control" autocomplete="username" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" asp-for="Input.Password">Password</label>
+                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" />
+                </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" asp-for="Input.RememberMe" />
+                    <label class="form-check-label small" asp-for="Input.RememberMe"></label>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Log in</button>
+            </form>
+            <p class="small text-muted text-center mt-3 mb-0">No account? <a asp-page="./Register">Register</a></p>
+        </div>
+    </div>
+</div>

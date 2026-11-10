@@ -1,0 +1,17 @@
+@model MathematicsLessons.Infrastructure.Data.Entities.Lesson
+@{ ViewData["Title"] = "Edit lesson"; }
+<h1>Edit lesson</h1>
+<form asp-action="EditLesson" method="post" enctype="multipart/form-data">
+@Html.AntiForgeryToken()
+<input type="hidden" asp-for="Id" />
+<input type="hidden" asp-for="TopicId" />
+<input type="hidden" asp-for="LevelId" />
+<p>Title <input asp-for="Title" class="form-control" /></p>
+<p>Content <textarea asp-for="Content" class="form-control" rows="4"></textarea></p>
+<p>Sort order <input asp-for="SortOrder" class="form-control" /></p>
+<p>Duration <input asp-for="DurationMinutes" class="form-control" /></p>
+<p>Points <input asp-for="PointsReward" class="form-control" /></p>
+<p>Video file <input type="file" name="videoFile" accept="video/*" class="form-control" /></p>
+@if (!string.IsNullOrEmpty(Model.Video)) { <p>Current: @Model.Video</p> }
+<button type="submit" class="btn btn-primary">Save</button>
+</form>

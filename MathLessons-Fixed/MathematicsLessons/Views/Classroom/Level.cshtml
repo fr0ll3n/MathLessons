@@ -1,0 +1,93 @@
+@model MathematicsLessons.Models.LevelBlock
+@{
+    ViewData["Title"] = Model.Level.Name;
+    var isStaff = User.IsInRole("Teacher") || User.IsInRole("Admin");
+    var firstOpen = true;
+}
+
+<a class="course-back" asp-action="Index">← All courses</a>
+
+@if (!Model.IsUnlocked && !isStaff)
+{
+    <div class="alert alert-warning">
+        This course is locked. Finish the previous level or get
+        <a asp-controller="Subscription" asp-action="Plans">Math Enthusiast</a>.
+    </div>
+}
+else
+{
+    <div class="course-shell">
+        <aside class="course-side">
+            <div class="course-side-progress">
+                <div class="bar"><span style="width:@Model.Percent%"></span></div>
+                <div class="pct">@Model.Completed / @Model.Total · @Model.Percent%</div>
+            </div>
+
+            @foreach (var topic in Model.Topics)
+            {
+                var secId = $"sec-{topic.Topic.Id}";
+                var open = firstOpen;
+                firstOpen = false;
+                <div class="course-sec">
+                    <button type="button"
+                            class="course-sec-btn"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#@secId"
+                            aria-expanded="@(open ? "true" : "false")">
+                        <span>@topic.Topic.Name</span>
+                        <span class="chev">▼</span>
+                    </button>
+                    <div id="@secId" class="collapse @(open ? "show" : "")">
+                        <ul class="course-lessons">
+                            @foreach (var row in topic.Lessons)
+                            {
+                                <li>
+                                    @if (row.IsUnlocked || isStaff)
+                                    {
+                                        <a asp-action="Lesson" asp-route-id="@row.Lesson.Id">
+                                            <span>@row.Lesson.Title</span>
+                                            @if (row.IsCompleted)
+                                            {
+                                                <span class="check">✓</span>
+                                            }
+                                            else if (string.IsNullOrEmpty(row.Lesson.Video) && isStaff)
+                                            {
+                                                <span class="small" style="color:#e8c96a">Upload</span>
+                                            }
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a class="locked" href="#">
+                                            <span>@row.Lesson.Title</span>
+                                            <span>🔒</span>
+                                        </a>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+        </aside>
+
+        <div class="course-main">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                <div>
+                    <h1>@Model.Level.Name</h1>
+                    <div class="meta">@Model.Level.GradeRange</div>
+                </div>
+                @if (isStaff)
+                {
+                    <a class="btn btn-sm btn-outline-secondary"
+                       asp-controller="CourseAdmin" asp-action="Sections"
+                       asp-route-courseId="@Model.Level.Id">Edit sections</a>
+                }
+            </div>
+            <p class="text-muted" style="max-width:36rem">@Model.Level.Description</p>
+            <p class="small text-muted mb-0">
+                Open a section on the left, then pick a lesson. Completed lessons show a green check.
+            </p>
+        </div>
+    </div>
+}

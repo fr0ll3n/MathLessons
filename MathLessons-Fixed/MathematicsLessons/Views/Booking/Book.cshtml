@@ -1,0 +1,167 @@
+@using MathematicsLessons.Infrastructure.Data.Entities
+@{
+    ViewData["Title"] = "Запази частен урок";
+    var plans = ViewBag.Plans as List<AppointmentPlan> ?? new();
+    var selectedPlanId = ViewBag.SelectedPlanId as int?;
+    var selectedPlan = ViewBag.SelectedPlan as AppointmentPlan;
+    var selectedDate = ViewBag.SelectedDate as string;
+    var hours = ViewBag.Hours as List<string> ?? new();
+    var dayFull = ViewBag.DayFull as bool? ?? false;
+    var dayCount = ViewBag.DaySessionCount as int? ?? 0;
+    var minDate = ViewBag.MinDate as string ?? "";
+    var maxDate = ViewBag.MaxDate as string ?? "";
+    var tz = ViewBag.TimeZoneNote as string ?? "";
+}
+
+<div class="mb-3">
+    <a asp-action="Index" class="small text-muted">← Моите сесии</a>
+    <h1 class="h3 fw-bold mt-2">Запази частен урок</h1>
+    <p class="text-muted">Избери продължителност → дата → час. Максимум <strong>4 сесии на ден</strong> общо за всички ученици.</p>
+</div>
+
+@* Step indicators *@
+<div class="d-flex gap-2 mb-4 flex-wrap">
+    <span class="badge @(selectedPlanId == null ? "bg-primary" : "bg-success")">1. Продължителност</span>
+    <span class="badge @(selectedPlanId != null && selectedDate == null ? "bg-primary" : (selectedDate != null ? "bg-success" : "bg-secondary"))">2. Дата</span>
+    <span class="badge @(selectedDate != null ? "bg-primary" : "bg-secondary")">3. Час</span>
+</div>
+
+@* STEP 1 – duration *@
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+        <h2 class="h5 fw-bold mb-3">1. Колко да продължи урокът?</h2>
+        <div class="row g-3">
+            @foreach (var p in plans.OrderBy(x => x.DurationMinutes))
+            {
+                var active = selectedPlanId == p.Id;
+                <div class="col-md-4">
+                    <a asp-action="Book" asp-route-planId="@p.Id"
+                       class="text-decoration-none">
+                        <div class="card h-100 duration-card @(active ? "border-primary border-2 shadow" : "border-0 shadow-sm")">
+                            <div class="card-body text-center p-4">
+                                <div class="display-6 text-primary fw-bold">@(p.DurationMinutes / 60.0 == 1.5 ? "1.5" : (p.DurationMinutes / 60).ToString())</div>
+                                <div class="small text-muted mb-2">часа · @p.DurationMinutes мин</div>
+                                <div class="fs-4 fw-bold">@p.Price.ToString("0.00") <span class="fs-6 text-muted">лв</span></div>
+                                <div class="small text-muted mt-1">@p.Name</div>
+                                @if (active)
+                                {
+                                    <span class="badge bg-primary mt-2">Избрано</span>
+                                }
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+        @if (!plans.Any())
+        {
+            <p class="text-muted mb-0">Няма дефинирани планове (1h / 1.5h / 2h). Админът трябва да ги добави.</p>
+        }
+    </div>
+</div>
+
+@if (selectedPlan != null)
+{
+    @* STEP 2 – calendar *@
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h2 class="h5 fw-bold mb-2">2. Избери дата</h2>
+            <p class="small text-muted">Ако за деня вече има 4 сесии от други хора, денят е <strong>зает</strong>.</p>
+            <form method="get" asp-action="Book" class="row g-2 align-items-end">
+                <input type="hidden" name="planId" value="@selectedPlan.Id" />
+                <div class="col-md-6">
+                    <label class="form-label">Дата</label>
+                    <input type="date" name="date" id="bookDate" class="form-control form-control-lg"
+                           value="@selectedDate" min="@minDate" max="@maxDate" required
+                           onchange="this.form.submit()" />
+                </div>
+                <div class="col-md-6">
+                    <div id="dayStatus" class="small">
+                        @if (!string.IsNullOrEmpty(selectedDate))
+                        {
+                            if (dayFull)
+                            {
+                                <div class="alert alert-warning mb-0 py-2">
+                                    <i class="bi bi-calendar-x"></i> Този ден е <strong>зает</strong> (@dayCount / 4 сесии). Избери друг ден.
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-success mb-0 py-2">
+                                    <i class="bi bi-calendar-check"></i> Свободен ден — @dayCount / 4 сесии заети.
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">Избери дата от календара.</span>
+                        }
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+@if (selectedPlan != null && !string.IsNullOrEmpty(selectedDate) && !dayFull)
+{
+    @* STEP 3 – hour *@
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h2 class="h5 fw-bold mb-2">3. Избери час</h2>
+            <p class="small text-muted mb-3">@tz</p>
+            @if (!hours.Any())
+            {
+                <div class="alert alert-info">Няма свободни часове за този ден (минали слотове или заети). Пробвай друга дата.</div>
+            }
+            else
+            {
+                <form asp-action="Book" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="planId" value="@selectedPlan.Id" />
+                    <input type="hidden" name="date" value="@selectedDate" />
+                    <div class="mb-3">
+                        <label class="form-label">Час (българско време)</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var h in hours)
+                            {
+                                <label class="btn btn-outline-primary hour-chip">
+                                    <input type="radio" name="hour" value="@h" required class="d-none" />
+                                    @h
+                                </label>
+                            }
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Бележка (по желание)</label>
+                        <textarea name="notes" class="form-control" rows="2" placeholder="Тема, върху която искаш да работите…"></textarea>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div class="text-muted small">
+                            @selectedPlan.Name · <strong class="text-primary">@selectedPlan.Price.ToString("0.00") лв</strong>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg">Към плащане</button>
+                    </div>
+                </form>
+            }
+        </div>
+    </div>
+}
+
+<style>
+.duration-card { transition: transform .12s, box-shadow .12s; border-radius: 14px; color: inherit; }
+.duration-card:hover { transform: translateY(-2px); }
+.hour-chip { min-width: 4.5rem; }
+.hour-chip:has(input:checked) {
+  background: var(--ml-primary, #1d4ed8);
+  color: #fff;
+  border-color: var(--ml-primary, #1d4ed8);
+}
+</style>
+<script>
+document.querySelectorAll('.hour-chip').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.hour-chip').forEach(x => x.classList.remove('active'));
+  });
+});
+</script>

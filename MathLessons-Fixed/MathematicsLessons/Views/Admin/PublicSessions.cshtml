@@ -1,0 +1,18 @@
+@model List<MathematicsLessons.Infrastructure.Data.Entities.Schedule>
+@{ ViewData["Title"] = "Discord"; }
+<div class="d-flex justify-content-between mb-3">
+  <h1 class="h4 mb-0">Публични Discord сесии</h1>
+  <a asp-action="CreatePublicSession" class="btn btn-sm btn-primary">Нова</a>
+</div>
+@foreach (var s in Model)
+{
+  <div class="card border-0 shadow-sm p-3 mb-2">
+    <strong>@s.Title</strong> — @s.SelectedDateTime.ToString("g") · @s.DurationMinutes мин
+    <div class="small text-muted">@(s.DiscordChannel ?? "#public-sessions")</div>
+    <form asp-action="DeletePublicSession" method="post" class="d-inline">@Html.AntiForgeryToken()
+      <input type="hidden" name="id" value="@s.Id" />
+      <button type="submit" class="btn btn-sm btn-link text-danger">Изтрий</button>
+    </form>
+  </div>
+}
+<a asp-action="Index">← Назад</a>

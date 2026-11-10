@@ -1,0 +1,97 @@
+@using MathematicsLessons.Infrastructure.Data
+@using MathematicsLessons.Infrastructure.Data.Entities
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+@inject ApplicationDbContext Db
+@{
+    var isSub = false;
+    if (SignInManager.IsSignedIn(User))
+    {
+        var uid = UserManager.GetUserId(User);
+        isSub = Db.Users.AsNoTracking().Any(u => u.Id == uid && u.SubId != null);
+    }
+}
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Math Lessons</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+@if (User.IsInRole("Admin"))
+{
+    <div class="admin-bar">
+        <div class="container">
+            <span class="admin-bar-label">Admin</span>
+            <a asp-controller="Admin" asp-action="Index">Panel</a>
+            <a asp-controller="Admin" asp-action="Users">Users</a>
+            <a asp-controller="Admin" asp-action="Plans">Plans</a>
+            <a asp-controller="Admin" asp-action="SessionPlans">Sessions</a>
+            <a asp-controller="Admin" asp-action="PublicSessions">Discord</a>
+            <a asp-controller="Admin" asp-action="Bookings">Bookings</a>
+            <a asp-controller="CourseAdmin" asp-action="Index">Courses</a>
+        </div>
+    </div>
+}
+<header class="site-header">
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" asp-controller="Home" asp-action="Index">Math <span>Lessons</span></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navMain">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item"><a class="nav-link" asp-controller="Classroom" asp-action="Index">Courses</a></li>
+                        @if (isSub || User.IsInRole("Teacher") || User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-controller="Booking" asp-action="Index">Private lesson</a></li>
+                        }
+                        <li class="nav-item"><a class="nav-link" asp-controller="Sessions" asp-action="Index">Discord</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Subscription" asp-action="Plans">Subscription</a></li>
+                        @if (User.IsInRole("Teacher") || User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-controller="CourseAdmin" asp-action="Index">Manage</a></li>
+                        }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="Index">Admin</a></li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <ul class="navbar-nav mr-auto"></ul>
+                }
+                <div class="d-flex align-items-center">
+                    <button type="button" id="themeToggle" class="mr-2">Dark</button>
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+<main class="site-main">
+    <div class="container py-4">
+        @if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+        @if (TempData["Error"] != null) { <div class="alert alert-warning">@TempData["Error"]</div> }
+        @RenderBody()
+    </div>
+</main>
+<footer class="site-footer">
+    <div class="container">Math Lessons</div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,14 @@
+@model MathematicsLessons.Infrastructure.Data.Entities.Topic
+@{
+  ViewData["Title"] = "Create section";
+  var course = ViewBag.Course as MathematicsLessons.Infrastructure.Data.Entities.Level;
+}
+<h1>New section in @course?.Name</h1>
+<form asp-action="CreateSection" method="post">
+@Html.AntiForgeryToken()
+<input type="hidden" asp-for="LevelId" />
+<p>Name (e.g. Algebra, Geometry, 1st grade) <input asp-for="Name" class="form-control" /></p>
+<p>Description <textarea asp-for="Description" class="form-control"></textarea></p>
+<p>Sort order <input asp-for="SortOrder" class="form-control" /></p>
+<button type="submit" class="btn btn-primary">Create section</button>
+</form>

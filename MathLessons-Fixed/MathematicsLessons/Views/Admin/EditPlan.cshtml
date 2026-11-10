@@ -1,0 +1,16 @@
+@model MathematicsLessons.Infrastructure.Data.Entities.Sub
+@{ ViewData["Title"] = "Редакция план"; }
+<div class="card border-0 shadow-sm p-4" style="max-width:480px">
+<form method="post">
+  @Html.AntiForgeryToken()
+  <input type="hidden" asp-for="Id" />
+  <div class="mb-2"><label class="form-label">Type</label><input asp-for="Type" class="form-control" /></div>
+  <div class="mb-2"><label class="form-label">Price/month</label><input asp-for="PricePerMonth" class="form-control" /></div>
+  <div class="mb-2"><label class="form-label">Price/year</label><input asp-for="PricePerYear" class="form-control" /></div>
+  <div class="mb-2"><label class="form-label">Description</label><textarea asp-for="Description" class="form-control"></textarea></div>
+  <div class="form-check mb-2"><input asp-for="IncludesPrivateSessions" class="form-check-input" /><label class="form-check-label" asp-for="IncludesPrivateSessions">Private sessions</label></div>
+  <div class="mb-3"><label class="form-label">Max sessions/month</label><input asp-for="MaxSessionsPerMonth" class="form-control" /></div>
+  <button type="submit" class="btn btn-primary">Запази</button>
+  <a asp-action="Plans" class="btn btn-link">Назад</a>
+</form>
+</div>

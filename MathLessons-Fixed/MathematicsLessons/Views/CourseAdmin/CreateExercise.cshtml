@@ -1,0 +1,12 @@
+@model MathematicsLessons.Infrastructure.Data.Entities.Exercise
+@{ ViewData["Title"] = "Create exercise"; }
+<h1>New exercise (after video)</h1>
+<form asp-action="CreateExercise" method="post">
+@Html.AntiForgeryToken()
+<input type="hidden" asp-for="LessonId" />
+<p>Question <textarea asp-for="Question" class="form-control"></textarea></p>
+<p>Solution <input asp-for="Solution" class="form-control" /></p>
+<p>Hint <input asp-for="Hint" class="form-control" /></p>
+<p>Points <input asp-for="PointsReward" class="form-control" /></p>
+<button type="submit" class="btn btn-primary">Add exercise</button>
+</form>

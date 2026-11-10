@@ -1,0 +1,18 @@
+@model List<MathematicsLessons.Infrastructure.Data.Entities.Exercise>
+@{
+  ViewData["Title"] = "Exercises";
+  var lesson = ViewBag.Lesson as MathematicsLessons.Infrastructure.Data.Entities.Lesson;
+}
+<h1>Exercises after video — @lesson?.Title</h1>
+<p><a asp-action="CreateExercise" asp-route-lessonId="@lesson?.Id">Add exercise</a> | <a asp-action="EditLesson" asp-route-id="@lesson?.Id">Lesson</a></p>
+<table class="table">
+@foreach (var e in Model) {
+<tr>
+<td>@e.Question</td><td>@e.Solution</td><td>@e.PointsReward pts</td>
+<td>
+<a asp-action="EditExercise" asp-route-id="@e.Id">Edit</a>
+<form asp-action="DeleteExercise" method="post" class="d-inline">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@e.Id" /><button type="submit">Delete</button></form>
+</td>
+</tr>
+}
+</table>

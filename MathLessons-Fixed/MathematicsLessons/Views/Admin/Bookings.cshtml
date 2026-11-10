@@ -1,0 +1,18 @@
+@model List<MathematicsLessons.Infrastructure.Data.Entities.Appointment>
+@{ ViewData["Title"] = "Резервации"; }
+<h1 class="h4">Резервации</h1>
+<table class="table table-sm bg-white shadow-sm">
+<thead><tr><th>Дата</th><th>User</th><th>План</th><th>Статус</th></tr></thead>
+<tbody>
+@foreach (var a in Model)
+{
+  <tr>
+    <td>@a.Date.ToString("g")</td>
+    <td>@a.User?.Email</td>
+    <td>@a.AppointmentPlan?.Name</td>
+    <td>@a.Status</td>
+  </tr>
+}
+</tbody>
+</table>
+<a asp-action="Index">← Назад</a>

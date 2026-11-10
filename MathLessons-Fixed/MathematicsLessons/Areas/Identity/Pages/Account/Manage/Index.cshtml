@@ -1,0 +1,14 @@
+@page
+@model MathematicsLessons.Areas.Identity.Pages.Account.Manage.IndexModel
+@{ ViewData["Title"] = "Profile"; }
+<h1>Profile</h1>
+@if (!string.IsNullOrEmpty(Model.StatusMessage)) { <div class="alert alert-success">@Model.StatusMessage</div> }
+<p>Email: @Model.Email</p>
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <p>First name <input asp-for="Input.FirstName" class="form-control" /></p>
+    <p>Last name <input asp-for="Input.LastName" class="form-control" /></p>
+    <p>Phone <input asp-for="Input.PhoneNumber" class="form-control" /></p>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+<p><a asp-page="./ChangePassword">Change password</a></p>

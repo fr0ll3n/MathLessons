@@ -1,0 +1,43 @@
+@model MathematicsLessons.Models.BookingPage
+@{ ViewData["Title"] = "Частен урок"; }
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+    <div>
+        <h1 class="h3 mb-1">Индивидуална сесия</h1>
+        <p class="text-muted small mb-0">План: @Model.PlanName · остават @Model.SessionsLeftThisMonth сесии този месец</p>
+    </div>
+    <a class="btn btn-primary" asp-action="Book"><i class="bi bi-calendar-plus"></i> Запази частен урок</a>
+</div>
+
+@if (Model.Upcoming != null)
+{
+    <div class="card-soft p-3 mb-4 border-primary">
+        <div class="fw-semibold">Предстояща сесия</div>
+        <div>@Model.Upcoming.Date.ToString("dd MMM yyyy HH:mm") · @Model.Upcoming.DurationMinutes мин</div>
+        <a class="btn btn-sm btn-accent mt-2" asp-action="Session" asp-route-id="@Model.Upcoming.Id">Отвори панела</a>
+    </div>
+}
+
+<h2 class="h6 text-muted">Моите резервации</h2>
+@if (!Model.Mine.Any())
+{
+    <p class="text-muted">Все още нямаш запазени часове.</p>
+}
+else
+{
+    <div class="table-responsive card-soft">
+        <table class="table mb-0">
+            <thead><tr><th>Дата</th><th>Продължителност</th><th>Статус</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var a in Model.Mine)
+            {
+                <tr>
+                    <td>@a.Date.ToString("g")</td>
+                    <td>@a.DurationMinutes мин</td>
+                    <td><span class="badge bg-secondary">@a.Status</span></td>
+                    <td><a asp-action="Session" asp-route-id="@a.Id">Детайли</a></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

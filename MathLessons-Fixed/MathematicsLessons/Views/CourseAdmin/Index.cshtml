@@ -1,0 +1,19 @@
+@model List<MathematicsLessons.Infrastructure.Data.Entities.Level>
+@{ ViewData["Title"] = "Manage courses"; }
+<h1>Manage courses (CRUD)</h1>
+<p><a asp-action="Create">Create course</a> | <a asp-controller="Teacher" asp-action="Dashboard">Teacher dashboard</a></p>
+<table class="table">
+<thead><tr><th>Order</th><th>Name</th><th>Grades</th><th>Sections</th><th>Lessons</th><th></th></tr></thead>
+<tbody>
+@foreach (var c in Model) {
+<tr>
+<td>@c.SortOrder</td><td>@c.Name</td><td>@c.GradeRange</td><td>@c.Topics.Count</td><td>@c.Lessons.Count</td>
+<td>
+<a asp-action="Details" asp-route-id="@c.Id">Details</a> |
+<a asp-action="Edit" asp-route-id="@c.Id">Edit</a> |
+<a asp-action="Sections" asp-route-courseId="@c.Id">Sections</a> |
+<a asp-action="Delete" asp-route-id="@c.Id">Delete</a>
+</td>
+</tr>
+}
+</tbody></table>

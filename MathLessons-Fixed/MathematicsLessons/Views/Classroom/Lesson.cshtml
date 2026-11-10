@@ -1,0 +1,119 @@
+@model MathematicsLessons.Models.LessonPage
+@{
+    ViewData["Title"] = Model.Lesson.Title;
+    var isStaff = User.IsInRole("Teacher") || User.IsInRole("Admin");
+}
+<a class="course-back" asp-action="Level" asp-route-id="@Model.Lesson.LevelId">← Back to course</a>
+<h1 class="page-title">@Model.Lesson.Title</h1>
+<p class="page-lead">@Model.Lesson.Topic?.Name</p>
+
+<div class="row">
+    <div class="col-lg-8 mb-3">
+        @if (!string.IsNullOrEmpty(Model.Lesson.Video))
+        {
+            <video id="lessonVideo" class="w-100 rounded" style="max-height:480px;background:#000" controls
+                   src="@Model.Lesson.Video"></video>
+        }
+        else
+        {
+            <div class="alert alert-secondary">No video uploaded yet.</div>
+        }
+
+        <div class="mt-3">@Model.Lesson.Content</div>
+
+        @if (Model.IsUnlocked || isStaff)
+        {
+            @if (!Model.VideoWatched && !isStaff)
+            {
+                <p class="small text-muted mt-3">Watch the video to the end to unlock exercises.</p>
+                <form id="watchedForm" asp-action="MarkVideoWatched" method="post" class="d-none">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Lesson.Id" />
+                </form>
+            }
+            else if (Model.CanPractice || (Model.VideoWatched && !Model.ExercisesPassed))
+            {
+                <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#exerciseModal">
+                    Practice exercises
+                </button>
+            }
+            else if (Model.ExercisesPassed)
+            {
+                <div class="alert alert-success mt-3">Lesson complete. Next video is unlocked in the course.</div>
+                <a class="btn btn-primary" asp-action="Level" asp-route-id="@Model.Lesson.LevelId">Back to course</a>
+            }
+        }
+    </div>
+    <div class="col-lg-4">
+        @if (Model.CanUpload)
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2 class="h6">Video (Teacher / Admin)</h2>
+                    @if (!string.IsNullOrEmpty(Model.Lesson.Video))
+                    {
+                        <form asp-action="RemoveVideo" method="post" class="mb-2" onsubmit="return confirm('Remove video?');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Lesson.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">Remove video</button>
+                        </form>
+                    }
+                    <form asp-action="Upload" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Lesson.Id" />
+                        <input type="file" name="video" accept="video/*" class="form-control-file mb-2" required />
+                        <button type="submit" class="btn btn-primary btn-sm btn-block">Upload / Replace</button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="exerciseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="SubmitExercises" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Lesson.Id" />
+                <div class="modal-header">
+                    <h5 class="modal-title">Exercises</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    @if (Model.Exercises == null || !Model.Exercises.Any())
+                    {
+                        <p class="text-muted mb-0">No exercises — submit to complete the lesson.</p>
+                    }
+                    else
+                    {
+                        var i = 0;
+                        foreach (var ex in Model.Exercises)
+                        {
+                            <div class="form-group">
+                                <label>@ex.Question</label>
+                                <input type="text" name="answers[@i]" class="form-control" required />
+                            </div>
+                            i++;
+                        }
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Check answers</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+  var v = document.getElementById('lessonVideo');
+  var form = document.getElementById('watchedForm');
+  if (!v || !form) return;
+  v.addEventListener('ended', function () { form.submit(); });
+})();
+</script>
+}

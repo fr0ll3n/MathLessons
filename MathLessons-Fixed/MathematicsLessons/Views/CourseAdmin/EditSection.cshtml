@@ -1,0 +1,12 @@
+@model MathematicsLessons.Infrastructure.Data.Entities.Topic
+@{ ViewData["Title"] = "Edit section"; }
+<h1>Edit section</h1>
+<form asp-action="EditSection" method="post">
+@Html.AntiForgeryToken()
+<input type="hidden" asp-for="Id" />
+<input type="hidden" asp-for="LevelId" />
+<p>Name <input asp-for="Name" class="form-control" /></p>
+<p>Description <textarea asp-for="Description" class="form-control"></textarea></p>
+<p>Sort order <input asp-for="SortOrder" class="form-control" /></p>
+<button type="submit" class="btn btn-primary">Save</button>
+</form>

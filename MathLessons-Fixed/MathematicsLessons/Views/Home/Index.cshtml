@@ -1,0 +1,52 @@
+@{
+    ViewData["Title"] = "Home";
+    var loggedIn = User.Identity?.IsAuthenticated == true;
+}
+@if (!loggedIn)
+{
+    <div class="hero">
+        <div class="hero-inner">
+            <h1>Online math lessons</h1>
+            <p>Structured courses from grade 1 to university — video, practice, and private sessions.</p>
+            <a class="btn btn-primary mr-2" asp-area="Identity" asp-page="/Account/Register">Register</a>
+            <a class="btn btn-outline-secondary" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.4)"
+               asp-area="Identity" asp-page="/Account/Login">Log in</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <img class="card-img-top" alt="" src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=80" />
+                <div class="card-body">
+                    <h2 class="h6">Video + practice</h2>
+                    <p class="small text-muted mb-0">Watch, then solve exercises to unlock the next lesson.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <img class="card-img-top" alt="" src="https://images.unsplash.com/photo-1509228627152-72ae9ae6848d?w=600&q=80" />
+                <div class="card-body">
+                    <h2 class="h6">Four levels</h2>
+                    <p class="small text-muted mb-0">Beginner → Intermediate → Advanced → College.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <img class="card-img-top" alt="" src="https://images.unsplash.com/photo-1596495577886-d920f1fb7238?w=600&q=80" />
+                <div class="card-body">
+                    <h2 class="h6">Free or Math Enthusiast</h2>
+                    <p class="small text-muted mb-0">Try free, or unlock full access and private lessons.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <h1 class="page-title">Welcome back</h1>
+    <p class="page-lead">Continue learning or manage your subscription.</p>
+    <a class="btn btn-primary mr-2" asp-controller="Classroom" asp-action="Index">Courses</a>
+    <a class="btn btn-outline-secondary" asp-controller="Subscription" asp-action="Plans">Subscription</a>
+}

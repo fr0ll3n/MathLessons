@@ -1,0 +1,33 @@
+@model MathematicsLessons.Infrastructure.Data.Entities.Appointment
+@{
+    ViewData["Title"] = "Сесия";
+    var canJoin = ViewBag.CanJoin as bool? ?? false;
+    var tooLate = ViewBag.TooLate as bool? ?? false;
+    var notYet = ViewBag.NotYet as bool? ?? false;
+}
+<div class="card-soft p-4 mx-auto" style="max-width:520px">
+    <h1 class="h4">Сесия #@Model.Id</h1>
+    <ul class="list-unstyled">
+        <li><strong>Дата:</strong> @Model.Date.ToString("dd MMM yyyy HH:mm")</li>
+        <li><strong>Продължителност:</strong> @Model.DurationMinutes мин</li>
+        <li><strong>Статус:</strong> @Model.Status</li>
+    </ul>
+    @if (canJoin && !string.IsNullOrEmpty(Model.MeetingLink))
+    {
+        <form asp-action="Join" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+            <button type="submit" class="btn btn-accent w-100 mb-2">Влез в Google Meet</button>
+        </form>
+        <p class="small text-muted">Можеш да влезеш от 2 мин преди часа до 5 мин след началото.</p>
+    }
+    else if (notYet)
+    {
+        <div class="alert alert-info">Още е рано. Линкът ще се отключи около часа на сесията.</div>
+    }
+    else if (tooLate)
+    {
+        <div class="alert alert-warning">Закъснение над 5 минути – сесията е отбелязана като пропусната.</div>
+    }
+    <a asp-action="Index">← Назад</a>
+</div>

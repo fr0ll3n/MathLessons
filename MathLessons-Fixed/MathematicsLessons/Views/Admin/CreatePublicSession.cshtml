@@ -1,0 +1,13 @@
+@model MathematicsLessons.Infrastructure.Data.Entities.Schedule
+@{ ViewData["Title"] = "Нова Discord сесия"; }
+<form method="post" class="card border-0 shadow-sm p-4" style="max-width:520px">
+  @Html.AntiForgeryToken()
+  <div class="mb-2"><label class="form-label">Title</label><input asp-for="Title" class="form-control" required /></div>
+  <div class="mb-2"><label class="form-label">Description</label><textarea asp-for="Description" class="form-control"></textarea></div>
+  <div class="mb-2"><label class="form-label">DateTime</label><input asp-for="SelectedDateTime" class="form-control" /></div>
+  <div class="mb-2"><label class="form-label">Minutes</label><input asp-for="DurationMinutes" class="form-control" /></div>
+  <div class="mb-2"><label class="form-label">Discord invite URL</label><input asp-for="DiscordInviteUrl" class="form-control" /></div>
+  <div class="mb-2"><label class="form-label">Channel</label><input asp-for="DiscordChannel" class="form-control" /></div>
+  <div class="mb-3"><label class="form-label">Topic focus</label><input asp-for="TopicFocus" class="form-control" /></div>
+  <button type="submit" class="btn btn-primary">Запази</button>
+</form>

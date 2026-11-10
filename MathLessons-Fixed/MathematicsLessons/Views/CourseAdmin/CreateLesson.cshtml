@@ -1,0 +1,14 @@
+@model MathematicsLessons.Infrastructure.Data.Entities.Lesson
+@{ ViewData["Title"] = "Create lesson"; }
+<h1>New lesson</h1>
+<form asp-action="CreateLesson" method="post">
+@Html.AntiForgeryToken()
+<input type="hidden" asp-for="TopicId" />
+<input type="hidden" asp-for="LevelId" />
+<p>Title <input asp-for="Title" class="form-control" /></p>
+<p>Content <textarea asp-for="Content" class="form-control" rows="4"></textarea></p>
+<p>Sort order <input asp-for="SortOrder" class="form-control" /></p>
+<p>Duration (min) <input asp-for="DurationMinutes" class="form-control" /></p>
+<p>Points <input asp-for="PointsReward" class="form-control" /></p>
+<button type="submit" class="btn btn-primary">Create (then add exercises)</button>
+</form>

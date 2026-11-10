@@ -1,0 +1,4 @@
+@model MathematicsLessons.Infrastructure.Data.Entities.Exercise
+@{ ViewData["Title"] = "Result"; }
+<div class="alert @(ViewBag.IsCorrect == true ? "alert-success" : "alert-warning")">@ViewBag.FeedbackMessage</div>
+<a asp-controller="Classroom" asp-action="Lesson" asp-route-id="@Model.LessonId">Back to lesson</a>

@@ -1,0 +1,12 @@
+@model MathematicsLessons.Infrastructure.Data.Entities.Level
+@{ ViewData["Title"] = Model.Name; }
+<h1 class="h3">@Model.Name</h1>
+<ul class="list-group">
+@foreach (var lesson in Model.Lessons.OrderBy(l => l.SortOrder))
+{
+    <li class="list-group-item">
+        <a asp-controller="Classroom" asp-action="Lesson" asp-route-id="@lesson.Id">@lesson.Title</a>
+        <span class="text-muted small">(@lesson.Topic?.Name)</span>
+    </li>
+}
+</ul>

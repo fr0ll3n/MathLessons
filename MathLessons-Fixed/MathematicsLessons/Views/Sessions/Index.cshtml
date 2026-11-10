@@ -1,0 +1,48 @@
+@model List<MathematicsLessons.Infrastructure.Data.Entities.Schedule>
+@{
+    ViewData["Title"] = "Discord сесии";
+    var joined = ViewBag.JoinedIds as HashSet<int> ?? new HashSet<int>();
+    var defDiscord = ViewBag.DefaultDiscord as string ?? "https://discord.gg/mathlessons";
+}
+<h1 class="h3 mb-2">Публични сесии (Discord)</h1>
+<p class="text-muted mb-3">
+    Въпроси по упражнения или неясни части от курса. Учителят обяснява на живо в Discord канала.
+</p>
+<a class="btn btn-primary mb-4" href="@defDiscord" target="_blank" rel="noopener">
+    <i class="bi bi-discord"></i> Отвори Discord сървъра
+</a>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">Няма насрочени публични сесии в момента.</p>
+}
+@foreach (var s in Model)
+{
+    <div class="card-soft p-3 mb-2">
+        <div class="fw-semibold">@s.Title</div>
+        <div class="small text-muted">@s.SelectedDateTime.ToString("dd MMM yyyy HH:mm") · @s.DurationMinutes мин</div>
+        <div class="small">@s.Description</div>
+        @if (!string.IsNullOrEmpty(s.TopicFocus))
+        {
+            <div class="small">Тема: @s.TopicFocus</div>
+        }
+        <div class="small">Канал: @(s.DiscordChannel ?? "#public-sessions")
+            @if (!string.IsNullOrEmpty(s.DiscordInviteUrl))
+            {
+                <text> · </text><a href="@s.DiscordInviteUrl" target="_blank">покана</a>
+            }
+        </div>
+        <div class="small text-muted">RSVP: @s.Attendances.Count</div>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            if (joined.Contains(s.Id))
+            {
+                <form asp-action="Leave" method="post" class="d-inline mt-2">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@s.Id" /><button type="submit" class="btn btn-sm btn-outline-secondary">Откажи RSVP</button></form>
+            }
+            else
+            {
+                <form asp-action="Join" method="post" class="d-inline mt-2">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@s.Id" /><button type="submit" class="btn btn-sm btn-primary">RSVP</button></form>
+            }
+        }
+    </div>
+}

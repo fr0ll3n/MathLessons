@@ -1,0 +1,104 @@
+@model MathematicsLessons.Models.ProfilePage
+@{
+    ViewData["Title"] = "Профил";
+    var rank = Model.Rank;
+    var rankIcon = rank?.Name switch
+    {
+        "Bronze" => "bi-award",
+        "Silver" => "bi-award-fill",
+        "Gold" => "bi-trophy",
+        "Emerald" => "bi-gem",
+        "Diamond" => "bi-diamond-fill",
+        "Master" => "bi-stars",
+        _ => "bi-person-badge"
+    };
+}
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm p-4">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="auth-logo" style="margin:0"><i class="bi bi-person"></i></div>
+                <div>
+                    <h1 class="h4 mb-0">@Model.User.DisplayName</h1>
+                    <p class="text-muted small mb-0">@Model.User.Email</p>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                @if (Model.User.SubId != null)
+                {
+                    <span class="badge bg-primary">@(Model.User.Sub?.Type ?? "Math Enthusiast")</span>
+                    <span class="small text-muted ms-1">@Model.User.BillingCycle</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">Free</span>
+                }
+            </div>
+
+            <div class="rank-badge mb-3">
+                <i class="bi @rankIcon"></i>
+                @(rank?.Name == "None" || rank == null ? "Без ранг" : rank.Name)
+                @if (rank != null && rank.MonthsSubscribed > 0)
+                {
+                    <span class="text-muted">· @rank.MonthsSubscribed мес. абонамент</span>
+                }
+            </div>
+            @if (rank?.MonthsUntilNext != null)
+            {
+                <p class="small text-muted">До <strong>@rank.NextRankName</strong>: още @rank.MonthsUntilNext мес. като Math Enthusiast</p>
+            }
+
+            <ul class="list-unstyled small mb-3">
+                <li class="mb-1"><i class="bi bi-lightning-charge text-warning"></i> Точки: <strong>@Model.User.Points</strong></li>
+                <li class="mb-1"><i class="bi bi-fire text-danger"></i> Серия: <strong>@Model.User.StreakDays</strong> дни</li>
+                <li class="mb-1"><i class="bi bi-journal-check text-primary"></i> Завършени уроци: <strong>@Model.CompletedLessons</strong></li>
+                <li class="mb-0"><i class="bi bi-calendar3 text-muted"></i> Регистрация: @Model.User.CreatedAt.ToString("dd MMM yyyy")</li>
+            </ul>
+
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-sm btn-outline-primary" asp-area="Identity" asp-page="/Account/Manage/Index">Настройки</a>
+                <a class="btn btn-sm btn-outline-secondary" asp-controller="Subscription" asp-action="Plans">Абонамент</a>
+                <a class="btn btn-sm btn-outline-secondary" asp-controller="Billing" asp-action="History">Плащания</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm p-4 mb-3">
+            <h2 class="h6 fw-bold">Рангове (лоялност)</h2>
+            <p class="small text-muted">С месеците като Math Enthusiast отключваш значки:</p>
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var (name, icon, need) in new[] {
+                    ("Bronze", "bi-award", "3"),
+                    ("Silver", "bi-award-fill", "5"),
+                    ("Gold", "bi-trophy", "8"),
+                    ("Emerald", "bi-gem", "12"),
+                    ("Diamond", "bi-diamond-fill", "15"),
+                    ("Master", "bi-stars", "24")
+                })
+                {
+                    var active = rank?.Name == name || (rank?.MonthsSubscribed >= int.Parse(need));
+                    <span class="rank-badge @(active ? "" : "opacity-50")">
+                        <i class="bi @icon"></i> @name <span class="text-muted">@need мес.</span>
+                    </span>
+                }
+            </div>
+        </div>
+        <div class="card border-0 shadow-sm p-4">
+            <h2 class="h6 fw-bold">Сертификати</h2>
+            @if (!Model.Certificates.Any())
+            {
+                <p class="text-muted small mb-0">Завърши ниво на 100%, за да получиш сертификат.</p>
+            }
+            else
+            {
+                <ul class="list-unstyled mb-0">
+                @foreach (var c in Model.Certificates)
+                {
+                    <li class="mb-2"><i class="bi bi-award-fill text-warning"></i> <strong>@c.Level?.Name</strong> · <code>@c.Code</code></li>
+                }
+                </ul>
+            }
+        </div>
+    </div>
+</div>

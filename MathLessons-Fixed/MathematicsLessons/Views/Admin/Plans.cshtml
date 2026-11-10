@@ -1,0 +1,14 @@
+@model List<MathematicsLessons.Infrastructure.Data.Entities.Sub>
+@{ ViewData["Title"] = "Планове"; }
+<h1 class="h4">Math Enthusiast план</h1>
+@foreach (var p in Model)
+{
+  <div class="card border-0 shadow-sm p-3 mb-2 d-flex flex-row justify-content-between align-items-center">
+    <div>
+      <strong>@p.Type</strong> — @p.PricePerMonth.ToString("0.00") лв/мес · @p.PricePerYear.ToString("0.00") лв/год
+      <div class="small text-muted">@p.Description</div>
+    </div>
+    <a class="btn btn-sm btn-outline-primary" asp-action="EditPlan" asp-route-id="@p.Id">Редакция</a>
+  </div>
+}
+<a asp-action="Index">← Назад</a>

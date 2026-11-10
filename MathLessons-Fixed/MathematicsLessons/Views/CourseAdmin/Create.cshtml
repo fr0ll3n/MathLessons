@@ -1,0 +1,13 @@
+@model MathematicsLessons.Infrastructure.Data.Entities.Level
+@{ ViewData["Title"] = "Create course"; }
+<h1>Create course</h1>
+<form asp-action="Create" method="post">
+@Html.AntiForgeryToken()
+<div asp-validation-summary="All"></div>
+<p>Name <input asp-for="Name" class="form-control" /></p>
+<p>Description <textarea asp-for="Description" class="form-control"></textarea></p>
+<p>Grade range <input asp-for="GradeRange" class="form-control" placeholder="1st-4th grade" /></p>
+<p>Sort order <input asp-for="SortOrder" class="form-control" /></p>
+<p>Badge color <input asp-for="BadgeColor" class="form-control" /></p>
+<button type="submit" class="btn btn-primary">Create</button>
+</form>

@@ -1,0 +1,42 @@
+@page
+@model MathematicsLessons.Areas.Identity.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+<div class="auth-wrap">
+    <div class="card">
+        <div class="card-body p-4">
+            <h1 class="h4 mb-1">Register</h1>
+            <p class="small text-muted mb-3">Free account — first Beginner lesson unlocked.</p>
+            <form method="post">
+                <div asp-validation-summary="All" class="text-danger small mb-2"></div>
+                <div class="row g-2">
+                    <div class="col-6 mb-3">
+                        <label class="form-label" asp-for="Input.FirstName">First name</label>
+                        <input asp-for="Input.FirstName" class="form-control" />
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="form-label" asp-for="Input.LastName">Last name</label>
+                        <input asp-for="Input.LastName" class="form-control" />
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" asp-for="Input.Email">Email</label>
+                    <input asp-for="Input.Email" class="form-control" autocomplete="username" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" asp-for="Input.Password">Password</label>
+                    <input asp-for="Input.Password" class="form-control" autocomplete="new-password" />
+                    <div class="form-text">Min. 6 chars, one uppercase (e.g. Admin123)</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" asp-for="Input.ConfirmPassword">Confirm password</label>
+                    <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Create account</button>
+            </form>
+            <p class="small text-muted text-center mt-3 mb-0">Already registered? <a asp-page="./Login">Log in</a></p>
+        </div>
+    </div>
+</div>
