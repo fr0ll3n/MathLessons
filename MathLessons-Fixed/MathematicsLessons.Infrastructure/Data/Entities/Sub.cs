@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MathematicsLessons.Infrastructure.Data.Entities;
 
-/// <summary>Subscription plan — pay monthly or annually (annual = discount).</summary>
+/// Subscription plan — pay monthly or annually (anually pays a bit less for a whole year).
 public class Sub
 {
     [Key]

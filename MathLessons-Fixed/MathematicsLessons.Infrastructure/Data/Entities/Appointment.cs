@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MathematicsLessons.Infrastructure.Data.Entities;
 
-/// <summary>Paid private session. Join window: start−2min … start+5min (max late = 5 min).</summary>
+/// Paid private session. Join window: start−2min … start+5min (max late = 5 min).
 public class Appointment
 {
     [Key]

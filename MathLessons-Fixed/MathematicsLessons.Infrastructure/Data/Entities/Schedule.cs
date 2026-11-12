@@ -2,9 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MathematicsLessons.Infrastructure.Data.Entities;
 
-/// <summary>
 /// Public Q&A session — teacher explains exercises / hard course parts on Discord.
-/// </summary>
 public class Schedule
 {
     [Key]

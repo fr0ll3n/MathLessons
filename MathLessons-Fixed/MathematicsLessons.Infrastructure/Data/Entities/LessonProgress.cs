@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MathematicsLessons.Infrastructure.Data.Entities;
 
-/// <summary>Join User ↔ Lesson (many-to-many) with mastery percent.</summary>
+/// Join User ↔ Lesson (many-to-many) with mastery percent.
 public class LessonProgress
 {
     [Key]

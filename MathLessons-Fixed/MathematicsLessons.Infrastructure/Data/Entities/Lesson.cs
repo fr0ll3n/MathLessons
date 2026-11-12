@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MathematicsLessons.Infrastructure.Data.Entities;
 
-/// <summary>Single video/text lesson. Sequential unlock within level.</summary>
+/// Single video/text lesson. Sequential unlock within level.
 public class Lesson
 {
     [Key]

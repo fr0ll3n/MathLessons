@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MathematicsLessons.Infrastructure.Data.Entities;
 
-/// <summary>Catalog level (Beginner / Intermediate / Advanced / University). One → many Topics & Lessons.</summary>
+/// Catalog level (Beginner / Intermediate / Advanced / University). One → many Topics & Lessons.
 public class Level
 {
     [Key]

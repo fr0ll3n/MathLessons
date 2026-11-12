@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MathematicsLessons.Infrastructure.Data.Entities;
 
-/// <summary>RSVP join User ↔ Schedule (many-to-many).</summary>
+/// RSVP join User ↔ Schedule (many-to-many).
 public class SessionAttendance
 {
     [Key]

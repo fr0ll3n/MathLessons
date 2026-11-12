@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MathematicsLessons.Infrastructure.Data.Entities;
 
-/// <summary>Private tutoring length tiers: 1h / 1.5h / 2h.</summary>
+/// Private tutoring length tiers: 1h / 1.5h / 2h.
 public class AppointmentPlan
 {
     [Key]

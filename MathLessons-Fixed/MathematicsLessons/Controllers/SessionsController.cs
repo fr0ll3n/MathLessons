@@ -8,9 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MathematicsLessons.Controllers;
 
-/// <summary>
 /// Public sessions = Discord live Q&A on course exercises / hard topics (not private tutoring).
-/// </summary>
 [Authorize]
 public class SessionsController : Controller
 {

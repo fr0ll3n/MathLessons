@@ -27,7 +27,7 @@ public class User : IdentityUser
 
     public DateTime? SubStartedAt { get; set; }
 
-    /// <summary>Monthly or Annual.</summary>
+    /// Monthly or Annual.
     [MaxLength(20)]
     public string? BillingCycle { get; set; }
 

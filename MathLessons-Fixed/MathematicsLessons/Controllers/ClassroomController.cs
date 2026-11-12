@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MathematicsLessons.Controllers;
 
-/// <summary>Course path: levels → topics → lessons → progress (Khan-style unlock).</summary>
+/// Course path: levels → topics → lessons → progress (Khan-style unlock).
 [Authorize]
 public class ClassroomController : Controller
 {

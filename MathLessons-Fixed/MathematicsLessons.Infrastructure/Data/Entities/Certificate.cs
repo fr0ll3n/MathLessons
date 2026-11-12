@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MathematicsLessons.Infrastructure.Data.Entities;
 
-/// <summary>Issued when a level is 100% complete (Coursera/Khan certificate idea).</summary>
+/// Issued when a level is 100% complete (Coursera/Khan certificate idea).
 public class Certificate
 {
     [Key]

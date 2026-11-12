@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MathematicsLessons.Infrastructure.Data.Entities;
 
-/// <summary>Unit inside a level (e.g. Algebra). Many → one Level; one → many Lessons.</summary>
+/// Unit inside a level (e.g. Algebra). Many → one Level; one → many Lessons.
 public class Topic
 {
     [Key]

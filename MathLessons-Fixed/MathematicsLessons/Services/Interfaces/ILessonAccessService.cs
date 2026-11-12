@@ -2,7 +2,7 @@ using MathematicsLessons.Infrastructure.Data.Entities;
 
 namespace MathematicsLessons.Services.Interfaces;
 
-/// <summary>Sequential unlock rules (Khan-style mastery path).</summary>
+/// Sequential unlock rules (Khan-style mastery path).
 public interface ILessonAccessService
 {
     bool IsLevelUnlocked(Level level, IReadOnlyList<Level> allLevels, IReadOnlyList<Lesson> allLessons, IReadOnlySet<int> completedLessonIds);

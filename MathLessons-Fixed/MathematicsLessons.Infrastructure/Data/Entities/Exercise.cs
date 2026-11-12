@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MathematicsLessons.Infrastructure.Data.Entities;
 
-/// <summary>Practice item after a lesson (Khan/Codecademy style check).</summary>
+/// Practice item after a lesson (Khan/Codecademy style check).
 public class Exercise
 {
     [Key]

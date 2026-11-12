@@ -3,7 +3,7 @@ using MathematicsLessons.Services.Interfaces;
 
 namespace MathematicsLessons.Services;
 
-/// <summary>Loyalty ranks by months subscribed: 3 Bronze … 24 Master.</summary>
+/// Loyalty ranks by months subscribed: 3 Bronze … 24 Master.
 public class SubscriberRankService : ISubscriberRankService
 {
     private static readonly (int Months, string Name, string Css)[] Ladder =
