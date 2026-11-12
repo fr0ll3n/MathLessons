@@ -49,6 +49,8 @@ public class BookingService : IBookingService
         if (await _ctx.Appointments.AnyAsync(a => a.Date == start && a.Status == "Booked"))
             return (false, "That slot is taken.", null);
 
+        await using var tx = await _ctx.Database.BeginTransactionAsync();
+
         var receipt = new Receipt
         {
             SubTotal = plan.Price,
@@ -71,7 +73,19 @@ public class BookingService : IBookingService
             MeetingLink = $"https://meet.google.com/{meetCode}"
         };
         _ctx.Appointments.Add(appt);
-        await _ctx.SaveChangesAsync();
+
+        try
+        {
+            await _ctx.SaveChangesAsync();
+            await tx.CommitAsync();
+        }
+        catch (DbUpdateException)
+        {
+            // The unique index on a booked slot rejected a concurrent double-booking;
+            // rolling back also discards the receipt created above.
+            await tx.RollbackAsync();
+            return (false, "That slot was just taken. Please pick another time.", null);
+        }
 
         await _notify.NotifyAsync(user.Id, "Session booked",
             $"{plan.Name} on {start:dd MMM yyyy HH:mm}. Meet opens at session time (max 5 min late).",

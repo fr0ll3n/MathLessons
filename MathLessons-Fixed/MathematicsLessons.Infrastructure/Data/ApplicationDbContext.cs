@@ -38,6 +38,9 @@ public class ApplicationDbContext : IdentityDbContext<User>
         {
             e.HasOne(l => l.Level).WithMany(lv => lv.Lessons).HasForeignKey(l => l.LevelId).OnDelete(DeleteBehavior.Restrict);
             e.HasOne(l => l.Topic).WithMany(t => t.Lessons).HasForeignKey(l => l.TopicId).OnDelete(DeleteBehavior.Restrict);
+            // Hot columns: the catalog always sorts lessons inside a level/topic.
+            e.HasIndex(l => new { l.LevelId, l.SortOrder });
+            e.HasIndex(l => new { l.TopicId, l.SortOrder });
         });
         builder.Entity<Exercise>(e =>
         {
@@ -48,10 +51,17 @@ public class ApplicationDbContext : IdentityDbContext<User>
             e.HasOne(a => a.User).WithMany(u => u.Appointments).HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne(a => a.AppointmentPlan).WithMany(p => p.Appointments).HasForeignKey(a => a.AppointmentPlanId).OnDelete(DeleteBehavior.Restrict);
             e.HasOne(a => a.Receipt).WithMany(r => r.Appointments).HasForeignKey(a => a.ReceiptId).OnDelete(DeleteBehavior.SetNull);
+            // Lookups: "my sessions this month" and "slots on a given day".
+            e.HasIndex(a => new { a.UserId, a.Date });
+            e.HasIndex(a => new { a.Status, a.Date });
+            // Belt-and-braces guard against two concurrent bookings of the same slot.
+            e.HasIndex(a => a.Date).IsUnique().HasFilter("[Status] = 'Booked'");
         });
         builder.Entity<Notification>(e =>
         {
             e.HasOne(n => n.User).WithMany(u => u.Notifications).HasForeignKey(n => n.UserId).OnDelete(DeleteBehavior.Cascade);
+            // The unread badge counts rows by (user, unread).
+            e.HasIndex(n => new { n.UserId, n.IsRead });
         });
         builder.Entity<LessonProgress>(e =>
         {

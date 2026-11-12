@@ -3,7 +3,9 @@ using MathematicsLessons.Infrastructure.Data.Entities;
 using MathematicsLessons.Services;
 using MathematicsLessons.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.RateLimiting;
 
 namespace MathematicsLessons;
 
@@ -14,7 +16,6 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Large video uploads (total library can grow toward ~70 GB on disk)
-        const long maxUpload = 2L * 1024 * 1024 * 1024; // 2 GB per request/file (diploma-friendly)
         builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(o =>
         {
             o.MultipartBodyLengthLimit = 100L * 1024 * 1024 * 1024;
@@ -57,6 +58,26 @@ public class Program
             o.Cookie.IsEssential = true;
         });
 
+        // Throttle abusive bursts (login/Identity pages and exercise submissions).
+        // Partitioned per client IP so one visitor can't exhaust everyone's budget.
+        builder.Services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            options.AddPolicy("auth", httpContext =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    factory: _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 10,
+                        Window = TimeSpan.FromMinutes(1),
+                        QueueLimit = 0
+                    }));
+        });
+
+        // /health returns JSON with a live database probe.
+        builder.Services.AddHealthChecks()
+            .AddCheck<DatabaseHealthCheck>("database");
+
         // Course-platform services (interfaces)
         builder.Services.AddScoped<ILessonAccessService, LessonAccessService>();
         builder.Services.AddScoped<IProgressService, ProgressService>();
@@ -72,7 +93,12 @@ public class Program
         using (var scope = app.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            await db.Database.MigrateAsync();
+            // Apply migrations when they exist; otherwise create the schema directly from
+            // the model (no migration is checked in, so this is what makes first run work).
+            if (db.Database.GetMigrations().Any())
+                await db.Database.MigrateAsync();
+            else
+                await db.Database.EnsureCreatedAsync();
             var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             foreach (var role in new[] { "Student", "Teacher", "Admin" })
             {
@@ -114,9 +140,11 @@ public class Program
         app.UseSession();
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseRateLimiter();
 
         app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
-        app.MapRazorPages();
+        app.MapRazorPages().RequireRateLimiting("auth");   // Identity pages: login/register/etc.
+        app.MapHealthChecks("/health");
         app.Run();
     }
 }

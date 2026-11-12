@@ -52,18 +52,29 @@ public class AdminController : Controller
                 u.LastName.Contains(q));
         }
         var list = await query.OrderBy(u => u.Email).Take(300).ToListAsync();
-        var rows = new List<AdminUserRow>();
-        foreach (var u in list)
+
+        // Batch role lookup (one query) instead of GetRolesAsync per user (N+1).
+        var ids = list.Select(u => u.Id).ToList();
+        var rolePairs = await (from ur in _ctx.UserRoles
+                               join r in _ctx.Roles on ur.RoleId equals r.Id
+                               where ids.Contains(ur.UserId)
+                               select new { ur.UserId, r.Name })
+                              .ToListAsync();
+        var rolesByUser = rolePairs
+            .GroupBy(x => x.UserId)
+            .ToDictionary(g => g.Key, g => g.Select(x => x.Name!).ToList());
+
+        var rows = list.Select(u =>
         {
-            var roles = await _users.GetRolesAsync(u);
-            rows.Add(new AdminUserRow
+            var roles = rolesByUser.TryGetValue(u.Id, out var r) ? r : new List<string>();
+            return new AdminUserRow
             {
                 User = u,
                 IsTeacher = roles.Contains("Teacher"),
                 IsAdmin = roles.Contains("Admin"),
                 Roles = string.Join(", ", roles)
-            });
-        }
+            };
+        }).ToList();
         ViewBag.Search = q;
         return View(rows);
     }
@@ -388,15 +399,10 @@ public class AdminController : Controller
 
     private static string BuildLessonContent(string title)
     {
-        return $"Урок: {title}.
-
-" +
-               "1) Гледай видеото докрай.
-" +
-               "2) Прочети кратките бележки.
-" +
-               "3) Реши упражненията под видеото — при грешка гледай урока отново.
-" +
+        return $"Урок: {title}.\n\n" +
+               "1) Гледай видеото докрай.\n" +
+               "2) Прочети кратките бележки.\n" +
+               "3) Реши упражненията под видеото — при грешка гледай урока отново.\n" +
                "4) След успех се отключва следващият урок в секцията.";
     }
 

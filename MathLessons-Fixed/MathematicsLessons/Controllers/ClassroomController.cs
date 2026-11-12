@@ -1,10 +1,12 @@
 using MathematicsLessons.Infrastructure.Data;
 using MathematicsLessons.Infrastructure.Data.Entities;
 using MathematicsLessons.Models;
+using MathematicsLessons.Services;
 using MathematicsLessons.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 namespace MathematicsLessons.Controllers;
@@ -19,18 +21,17 @@ public class ClassroomController : Controller
     private readonly ILessonAccessService _access;
     private readonly IProgressService _progress;
     private readonly ICertificateService _certs;
-    private readonly IPointsService _points;
     private readonly INotificationService _notify;
     private readonly ISubscriptionService _subs;
 
     public ClassroomController(
         ApplicationDbContext ctx, UserManager<User> users, IWebHostEnvironment env,
         ILessonAccessService access, IProgressService progress, ICertificateService certs,
-        IPointsService points, INotificationService notify, ISubscriptionService subs)
+        INotificationService notify, ISubscriptionService subs)
     {
         _ctx = ctx; _users = users; _env = env;
         _access = access; _progress = progress; _certs = certs;
-        _points = points; _notify = notify; _subs = subs;
+        _notify = notify; _subs = subs;
     }
 
     private async Task<User?> MeAsync()
@@ -327,6 +328,7 @@ public class ClassroomController : Controller
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> SubmitExercises(int id, List<string> answers)
     {
         var me = await MeAsync();
@@ -352,9 +354,8 @@ public class ClassroomController : Controller
         bool allOk = true;
         for (int i = 0; i < exercises.Count; i++)
         {
-            var expected = (exercises[i].Solution ?? "").Replace(" ", "").ToLowerInvariant();
-            var given = (answers != null && i < answers.Count ? answers[i] : "").Replace(" ", "").ToLowerInvariant();
-            if (expected != "practice" && expected != given && !given.Contains(expected))
+            var given = answers != null && i < answers.Count ? answers[i] : "";
+            if (!AnswerChecker.IsCorrect(exercises[i].Solution, given))
                 allOk = false;
         }
         if (!allOk)
@@ -373,37 +374,5 @@ public class ClassroomController : Controller
         await _ctx.SaveChangesAsync();
         TempData["Success"] = "Exercises passed. Next lesson unlocked.";
         return RedirectToAction(nameof(Lesson), new { id });
-    }
-
-    public async Task<IActionResult> Practice(int id, string answer)
-    {
-        var me = await MeAsync();
-        if (me == null) return Challenge();
-
-        var exercise = await _ctx.Exercises.Include(e => e.Lesson).FirstOrDefaultAsync(e => e.LessonId == id)
-                       ?? await _ctx.Exercises.Include(e => e.Lesson).FirstOrDefaultAsync(e => e.Id == id);
-        if (exercise == null)
-        {
-            TempData["Error"] = "No exercise for this lesson.";
-            return RedirectToAction(nameof(Lesson), new { id });
-        }
-
-        var expected = exercise.Solution.Replace(" ", "", StringComparison.OrdinalIgnoreCase);
-        var given = (answer ?? "").Replace(" ", "", StringComparison.OrdinalIgnoreCase);
-        var ok = expected.Equals(given, StringComparison.OrdinalIgnoreCase)
-                 || given.Contains(expected, StringComparison.OrdinalIgnoreCase)
-                 || expected == "practice";
-
-        if (ok)
-            await _points.AwardAsync(me, exercise.PointsReward, "Exercise correct");
-
-        return View("Lesson", new LessonPage
-        {
-            Lesson = await _ctx.Lessons.Include(l => l.Exercises).Include(l => l.Topic).Include(l => l.Level)
-                .FirstAsync(l => l.Id == exercise.LessonId),
-            IsUnlocked = true,
-            PracticeCorrect = ok,
-            PracticeMessage = ok ? $"Correct! +{exercise.PointsReward} points." : (exercise.Hint ?? "Try again.")
-        });
     }
 }

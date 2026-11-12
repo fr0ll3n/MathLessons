@@ -1,0 +1,32 @@
+# ---- .NET build output ----
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# ---- Rider / VS Code ----
+.idea/
+.vscode/
+
+# ---- Build / publish artifacts ----
+[Dd]ebug/
+[Rr]elease/
+publish/
+*.pdb
+*.cache
+
+# ---- Runtime data (local databases, uploads) ----
+*.mdf
+*.ldf
+*.db
+*.sqlite
+MathematicsLessons/wwwroot/uploads/
+
+# ---- Secrets ----
+appsettings.Development.local.json
+secrets.json
+
+# ---- OS noise ----
+Thumbs.db
+.DS_Store

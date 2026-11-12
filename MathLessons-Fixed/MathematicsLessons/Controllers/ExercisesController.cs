@@ -1,9 +1,11 @@
 using MathematicsLessons.Infrastructure.Data;
 using MathematicsLessons.Infrastructure.Data.Entities;
+using MathematicsLessons.Services;
 using MathematicsLessons.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 namespace MathematicsLessons.Controllers;
@@ -19,6 +21,7 @@ public class ExercisesController : Controller
         _ctx = ctx; _users = users; _points = points;
     }
 
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> Practice(int id)
     {
@@ -30,19 +33,26 @@ public class ExercisesController : Controller
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> Submit(int id, string studentAnswer)
     {
         var exercise = await _ctx.Exercises.Include(e => e.Lesson).FirstOrDefaultAsync(e => e.Id == id);
         if (exercise == null) return NotFound();
-        var expected = exercise.Solution.Replace(" ", "", StringComparison.OrdinalIgnoreCase);
-        var given = (studentAnswer ?? "").Replace(" ", "", StringComparison.OrdinalIgnoreCase);
-        var ok = expected.Equals(given, StringComparison.OrdinalIgnoreCase)
-                 || given.Contains(expected, StringComparison.OrdinalIgnoreCase)
-                 || expected == "practice";
+
+        var ok = AnswerChecker.IsCorrect(exercise.Solution, studentAnswer);
+
         if (ok)
         {
             var me = await _users.GetUserAsync(User);
-            if (me != null) await _points.AwardAsync(me, exercise.PointsReward, "Exercise correct");
+            if (me != null)
+            {
+                // Only pay out the first time this lesson's exercises are passed, so the
+                // form cannot simply be resubmitted to farm points.
+                var progress = await _ctx.LessonProgress
+                    .FirstOrDefaultAsync(p => p.UserId == me.Id && p.LessonId == exercise.LessonId);
+                if (progress?.ExercisesPassed != true)
+                    await _points.AwardAsync(me, exercise.PointsReward, "Exercise correct");
+            }
             ViewBag.IsCorrect = true;
             ViewBag.FeedbackMessage = $"Correct! +{exercise.PointsReward} points.";
         }

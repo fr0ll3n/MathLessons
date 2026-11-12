@@ -41,10 +41,17 @@ public class ProgressService : IProgressService
 
     public async Task<bool> IsLevelCompleteAsync(string userId, int levelId)
     {
-        var lessonIds = await _ctx.Lessons.Where(l => l.LevelId == levelId).Select(l => l.Id).ToListAsync();
-        if (lessonIds.Count == 0) return false;
-        var done = await _ctx.LessonProgress.CountAsync(p =>
-            p.UserId == userId && p.IsCompleted && lessonIds.Contains(p.LessonId));
-        return done == lessonIds.Count;
+        // Single query: total lessons in the level and how many this user completed.
+        var stats = await _ctx.Lessons
+            .Where(l => l.LevelId == levelId)
+            .GroupBy(l => l.LevelId)
+            .Select(g => new
+            {
+                Total = g.Count(),
+                Completed = g.Count(l => l.ProgressEntries.Any(p => p.UserId == userId && p.IsCompleted))
+            })
+            .FirstOrDefaultAsync();
+
+        return stats is { Total: > 0 } && stats.Completed == stats.Total;
     }
 }

@@ -60,11 +60,9 @@ public class NotificationsController : Controller
         var me = await _users.GetUserAsync(User);
         if (me == null) return Challenge();
 
-        var unread = await _ctx.Notifications
+        await _ctx.Notifications
             .Where(n => n.UserId == me.Id && !n.IsRead)
-            .ToListAsync();
-        foreach (var n in unread) n.IsRead = true;
-        await _ctx.SaveChangesAsync();
+            .ExecuteUpdateAsync(s => s.SetProperty(n => n.IsRead, true));
         return RedirectToAction(nameof(Index));
     }
 }
