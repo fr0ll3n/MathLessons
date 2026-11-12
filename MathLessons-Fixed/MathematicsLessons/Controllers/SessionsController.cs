@@ -8,9 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MathematicsLessons.Controllers;
 
-/// <summary>
 /// Public sessions = Discord live Q&A on course exercises / hard topics (not private tutoring).
-/// </summary>
 [Authorize]
 public class SessionsController : Controller
 {
@@ -37,7 +35,7 @@ public class SessionsController : Controller
             : (await _ctx.SessionAttendances.Where(a => a.UserId == me.Id).Select(a => a.ScheduleId).ToListAsync()).ToHashSet();
 
         ViewBag.JoinedIds = myIds;
-        ViewBag.DefaultDiscord = "https://discord.gg/mathlessons"; // placeholder for diploma
+        ViewBag.DefaultDiscord = "https://discord.gg/mathlessons";
         return View(upcoming);
     }
 

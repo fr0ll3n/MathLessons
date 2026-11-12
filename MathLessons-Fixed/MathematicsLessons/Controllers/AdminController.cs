@@ -231,115 +231,6 @@ public class AdminController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> LoadDemoCourses()
-    {
-        if (await _ctx.Levels.AnyAsync())
-        {
-            TempData["Error"] = "Courses already exist. Demo catalog was not loaded.";
-            return RedirectToAction(nameof(Index));
-        }
-
-        const string sampleVideo = "https://www.w3schools.com/html/mov_bbb.mp4";
-
-        if (!await _ctx.Subs.AnyAsync())
-        {
-            _ctx.Subs.Add(new Sub
-            {
-                Type = "Free",
-                PricePerMonth = 0,
-                PricePerYear = 0,
-                IncludesPrivateSessions = false,
-                Description = "First Beginner lesson free",
-                MaxSessionsPerMonth = 0
-            });
-            _ctx.Subs.Add(new Sub
-            {
-                Type = "Math Enthusiast",
-                PricePerMonth = 19.99m,
-                PricePerYear = 199m,
-                IncludesPrivateSessions = true,
-                Description = "Full access + private lessons",
-                MaxSessionsPerMonth = 8
-            });
-        }
-
-        if (!await _ctx.AppointmentPlans.AnyAsync())
-        {
-            _ctx.AppointmentPlans.AddRange(
-                new AppointmentPlan { Name = "1 hour", DurationMinutes = 60, Price = 25m },
-                new AppointmentPlan { Name = "1.5 hours", DurationMinutes = 90, Price = 35m },
-                new AppointmentPlan { Name = "2 hours", DurationMinutes = 120, Price = 45m });
-        }
-
-        var beginner = new Level { Name = "Beginner", GradeRange = "1st – 4th grade", SortOrder = 1, Description = "Основи за 1–4 клас." };
-        var intermediate = new Level { Name = "Intermediate", GradeRange = "5th – 7th grade", SortOrder = 2, Description = "5–7 клас." };
-        var advanced = new Level { Name = "Advanced", GradeRange = "8th – 12th grade", SortOrder = 3, Description = "8–12 клас." };
-        var college = new Level { Name = "College", GradeRange = "University Part 1–3", SortOrder = 4, Description = "University math." };
-        _ctx.Levels.AddRange(beginner, intermediate, advanced, college);
-        await _ctx.SaveChangesAsync();
-
-        await SeedGrade(beginner.Id, 1, sampleVideo,
-            ("Числа и броене", new[] { "Числа до 10", "Сравняване", "Числова ос" }),
-            ("Събиране и изваждане", new[] { "Събиране до 10", "Изваждане до 10", "Задачи" }),
-            ("Фигури", new[] { "Квадрат и кръг", "Триъгълник", "Разпознаване" }));
-        await SeedGrade(beginner.Id, 2, sampleVideo,
-            ("Числа до 100", new[] { "Десетици", "Събиране", "Изваждане" }),
-            ("Умножение", new[] { "Увод", "Таблица 2 и 5", "Задачи" }),
-            ("Фигури", new[] { "Отсечка", "Сантиметър", "Правоъгълник" }));
-        await SeedGrade(beginner.Id, 3, sampleVideo,
-            ("Числа до 1000", new[] { "Разряди", "Събиране", "Изваждане" }),
-            ("Умножение и деление", new[] { "Таблица", "Деление", "Задачи" }),
-            ("Геометрия", new[] { "Периметър", "Триъгълници", "Симетрия" }));
-        await SeedGrade(beginner.Id, 4, sampleVideo,
-            ("Големи числа", new[] { "Над 1000", "Закони", "Оценка" }),
-            ("Дроби", new[] { "Какво е дроб", "Единични", "Сравняване" }),
-            ("Лице", new[] { "Правоъгълник", "Единици", "Задачи" }));
-
-        await SeedGrade(intermediate.Id, 5, sampleVideo,
-            ("Дроби", new[] { "Събиране", "Десетични", "Преобразуване" }),
-            ("Уравнения", new[] { "Неизвестно", "Прости", "Проверка" }),
-            ("Геометрия", new[] { "Ъгли", "Триъгълник", "Лице" }));
-        await SeedGrade(intermediate.Id, 6, sampleVideo,
-            ("Проценти", new[] { "Отношение", "Пропорция", "Проценти" }),
-            ("Алгебра", new[] { "Изрази", "Опростяване", "Уравнения" }),
-            ("Геометрия", new[] { "Окръжност", "Лице кръг", "Координати" }));
-        await SeedGrade(intermediate.Id, 7, sampleVideo,
-            ("Рационални", new[] { "Отрицателни", "Смятане", "Ос" }),
-            ("Уравнения", new[] { "Линейни", "Неравенства", "Текст" }),
-            ("Геометрия", new[] { "Питагор", "Подобие", "Многоъгълници" }));
-
-        await SeedGrade(advanced.Id, 8, sampleVideo,
-            ("Алгебра", new[] { "Степени", "Многочлени", "Формули" }),
-            ("Функции", new[] { "Увод", "Линейна", "Графика" }),
-            ("Геометрия", new[] { "Вектори", "Окръжност", "Лица" }));
-        await SeedGrade(advanced.Id, 9, sampleVideo,
-            ("Квадратни", new[] { "Дискриминанта", "Корени", "Задачи" }),
-            ("Функции", new[] { "Квадратна", "Графики", "Трансформации" }),
-            ("Планиметрия", new[] { "Подобие", "Тригонометрия", "Лица" }));
-        await SeedGrade(advanced.Id, 10, sampleVideo,
-            ("Логаритми", new[] { "Показателни", "Лог", "Свойства" }),
-            ("Тригонометрия", new[] { "sin cos", "Тъждества", "Уравнения" }),
-            ("Стереометрия", new[] { "Призма", "Пирамида", "Обем" }));
-        await SeedGrade(advanced.Id, 11, sampleVideo,
-            ("Комбинаторика", new[] { "Пермутации", "Комбинации", "Задачи" }),
-            ("Вероятности", new[] { "Класическа", "Събития", "Практика" }),
-            ("Стереометрия", new[] { "Цилиндър", "Конус", "Сфера" }));
-        await SeedGrade(advanced.Id, 12, sampleVideo,
-            ("Матура", new[] { "Алгебра", "Функции", "Геометрия" }),
-            ("Параметър", new[] { "Уравнения", "Неравенства", "Графики" }),
-            ("Смесени", new[] { "Задачи 1", "Задачи 2", "Пробен" }));
-
-        await SeedTopic(college.Id, "Part 1 — Граници", 1, sampleVideo, "Граница на редица", "Граница на функция", "Непрекъснатост");
-        await SeedTopic(college.Id, "Part 1 — Производни", 2, sampleVideo, "Дефиниция", "Правила", "Приложения");
-        await SeedTopic(college.Id, "Part 2 — Матрици", 3, sampleVideo, "Операции", "Детерминанти", "Обратна матрица");
-        await SeedTopic(college.Id, "Part 2 — Вектори", 4, sampleVideo, "Независимост", "Базис", "Изображения");
-        await SeedTopic(college.Id, "Part 3 — Вероятности", 5, sampleVideo, "Дискретни", "Очакване", "Нормално");
-        await SeedTopic(college.Id, "Part 3 — Статистика", 6, sampleVideo, "Описателна", "Извадки", "Интервали");
-
-        TempData["Success"] = "Demo courses loaded.";
-        return RedirectToAction(nameof(Index));
-    }
-
     private async Task SeedGrade(int levelId, int grade, string video, params (string subject, string[] lessons)[] subjects)
     {
         int order = grade * 10;
@@ -405,7 +296,6 @@ public class AdminController : Controller
                "3) Реши упражненията под видеото — при грешка гледай урока отново.\n" +
                "4) След успех се отключва следващият урок в секцията.";
     }
-
 }
 
 

@@ -3,9 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MathematicsLessons.Infrastructure.Data;
 
-/// <summary>
 /// Static catalog seed — applied through EF migrations (Update-Database).
-/// </summary>
 public static class CatalogSeed
 {
     public const string SampleVideo = "https://www.w3schools.com/html/mov_bbb.mp4";
@@ -40,10 +38,10 @@ public static class CatalogSeed
             new AppointmentPlan { Id = 3, Name = "2 hours", DurationMinutes = 120, Price = 45m, Description = "Private lesson 120 minutes" });
 
         modelBuilder.Entity<Level>().HasData(
-            new Level { Id = 1, Name = "Beginner", GradeRange = "1st – 4th grade", SortOrder = 1, Description = "Основи за 1–4 клас: числа, смятане, фигури." },
-            new Level { Id = 2, Name = "Intermediate", GradeRange = "5th – 7th grade", SortOrder = 2, Description = "Дроби, уравнения, геометрия за 5–7 клас." },
-            new Level { Id = 3, Name = "Advanced", GradeRange = "8th – 12th grade", SortOrder = 3, Description = "Алгебра, функции, стереометрия към матура." },
-            new Level { Id = 4, Name = "College", GradeRange = "University Part 1–3", SortOrder = 4, Description = "Анализ, линейна алгебра, вероятности." });
+            new Level { Id = 1, Name = "Beginner", GradeRange = "1 – 4 клас", SortOrder = 1, Description = "Основи за 1–4 клас: числа, смятане, фигури." },
+            new Level { Id = 2, Name = "Intermediate", GradeRange = "5 – 7 клас", SortOrder = 2, Description = "Дроби, уравнения, геометрия за 5–7 клас." },
+            new Level { Id = 3, Name = "Advanced", GradeRange = "8 – 12 клас", SortOrder = 3, Description = "Алгебра, функции, стереометрия към матура." },
+            new Level { Id = 4, Name = "College", GradeRange = "Висша математика част 1–3", SortOrder = 4, Description = "Анализ, линейна алгебра, вероятности." });
 
         // Topics: Id, LevelId, Name, Description, SortOrder
         var topics = new List<Topic>();

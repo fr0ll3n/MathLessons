@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MathematicsLessons.Controllers;
 
-/// <summary>Guest → subscribe Monthly or Annual (simulated pay).</summary>
+/// Guest → subscribe Monthly or Annual (simulated pay).
 [Authorize]
 public class SubscriptionController : Controller
 {

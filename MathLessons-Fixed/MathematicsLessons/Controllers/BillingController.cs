@@ -7,10 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MathematicsLessons.Controllers;
 
-/// <summary>
 /// Logic: payment / receipt history for the logged-in user (subscriptions + sessions).
 /// Uses existing Receipt entity — no fake payment gateway.
-/// </summary>
 [Authorize]
 public class BillingController : Controller
 {
