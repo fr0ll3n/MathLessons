@@ -1,14 +1,38 @@
 @model List<MathematicsLessons.Infrastructure.Data.Entities.Sub>
-@{ ViewData["Title"] = "Планове"; }
-<h1 class="h4">Math Enthusiast план</h1>
+@{ ViewData["Title"] = "Subscription prices"; }
+<h1 class="page-title">Subscription prices</h1>
+<p class="page-lead">Edit or remove Free / Math Enthusiast plans.</p>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-warning">No plans. Use <strong>Load demo courses + prices</strong> on the admin home page.</div>
+}
 @foreach (var p in Model)
 {
-  <div class="card border-0 shadow-sm p-3 mb-2 d-flex flex-row justify-content-between align-items-center">
-    <div>
-      <strong>@p.Type</strong> — @p.PricePerMonth.ToString("0.00") лв/мес · @p.PricePerYear.ToString("0.00") лв/год
-      <div class="small text-muted">@p.Description</div>
+    <div class="card mb-3">
+        <div class="card-body d-flex flex-wrap justify-content-between align-items-center">
+            <div>
+                <strong>@p.Type</strong>
+                <div class="small text-muted">@p.Description</div>
+                <div class="mt-1">
+                    <span class="badge-soft">@p.PricePerMonth.ToString("0.00") BGN/mo</span>
+                    <span class="badge-soft ml-1">@p.PricePerYear.ToString("0.00") BGN/yr</span>
+                    @if (p.IncludesPrivateSessions)
+                    {
+                        <span class="small text-muted ml-2">Private sessions: @p.MaxSessionsPerMonth / month</span>
+                    }
+                </div>
+            </div>
+            <div class="mt-2 mt-md-0">
+                <a class="btn btn-sm btn-primary" asp-action="EditPlan" asp-route-id="@p.Id">Edit</a>
+                <form asp-action="DeletePlan" method="post" class="d-inline"
+                      onsubmit="return confirm('Delete this plan?');">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@p.Id" />
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">Delete</button>
+                </form>
+            </div>
+        </div>
     </div>
-    <a class="btn btn-sm btn-outline-primary" asp-action="EditPlan" asp-route-id="@p.Id">Редакция</a>
-  </div>
 }
-<a asp-action="Index">← Назад</a>
+<a class="btn btn-outline-secondary btn-sm" asp-action="Index">Back</a>

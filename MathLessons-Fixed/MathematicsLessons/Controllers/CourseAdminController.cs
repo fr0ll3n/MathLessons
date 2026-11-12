@@ -8,10 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MathematicsLessons.Controllers;
 
+/// <summary>
 /// CRUD for the math catalog (study.com / Khan style):
 /// Course (Level) → Section (Topic, e.g. Algebra, Geometry, 1st grade) → Lesson (video) → Exercises after video.
 /// Only Owner (Admin) and Teachers.
 /// Notifications fire only on content create/update (new course, section, lesson fix).
+/// </summary>
 [Authorize(Roles = "Teacher,Admin")]
 public class CourseAdminController : Controller
 {
@@ -117,7 +119,7 @@ public class CourseAdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // SECTIONS (Topic) 
+    // ========== SECTIONS (Topic) ==========
 
     [HttpGet]
     public async Task<IActionResult> Sections(int courseId)
@@ -204,7 +206,7 @@ public class CourseAdminController : Controller
         return RedirectToAction(nameof(Sections), new { courseId });
     }
 
-    // LESSONS
+    // ========== LESSONS ==========
 
     [HttpGet]
     public async Task<IActionResult> Lessons(int sectionId)
@@ -326,7 +328,7 @@ public class CourseAdminController : Controller
         return RedirectToAction(nameof(Lessons), new { sectionId });
     }
 
-    // EXERCISES (after video)
+    // ========== EXERCISES (after video) ==========
 
     [HttpGet]
     public async Task<IActionResult> Exercises(int lessonId)

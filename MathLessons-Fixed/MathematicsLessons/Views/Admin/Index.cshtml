@@ -1,73 +1,103 @@
 @model MathematicsLessons.Controllers.AdminStatsVm
-@{ ViewData["Title"] = "Админ панел"; }
+@{ ViewData["Title"] = "Admin panel"; }
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
   <div>
-    <h1 class="h3 fw-bold mb-0"><i class="bi bi-shield-lock text-primary"></i> Админ панел</h1>
-    <p class="text-muted small mb-0">Виждаш това само с роля <strong>Admin</strong> (OwnerEmail).</p>
+    <h1 class="page-title mb-0">Admin panel</h1>
+    <p class="text-muted small mb-0">Only users with Admin role (OwnerEmail).</p>
   </div>
 </div>
 
-<div class="row g-3 mb-4">
-</div>
+<div class="row mb-4">
+  <div class="col-6 col-md-3 mb-3"><div class="card"><div class="card-body">
+    <div class="small text-muted">Users</div>
+    <div class="h4 mb-0">@Model.TotalUsers</div>
+  </div></div></div>
+  <div class="col-6 col-md-3 mb-3"><div class="card"><div class="card-body">
+    <div class="small text-muted">Math Enthusiast</div>
+    <div class="h4 mb-0">@Model.TotalSubscribers</div>
+  </div></div></div>
+  <div class="col-6 col-md-3 mb-3"><div class="card"><div class="card-body">
+    <div class="small text-muted">Teachers</div>
+    <div class="h4 mb-0">@Model.TotalTeachers</div>
+  </div></div></div>
+  <div class="col-6 col-md-3 mb-3"><div class="card"><div class="card-body">
+    <div class="small text-muted">Courses</div>
+    <div class="h4 mb-0">@Model.TotalCourses</div>
+  </div></div></div>
+  <div class="col-6 col-md-3 mb-3"><div class="card"><div class="card-body">
+    <div class="small text-muted">Lessons</div>
+    <div class="h4 mb-0">@Model.TotalLessons</div>
+  </div></div></div>
+  <div class="col-6 col-md-3 mb-3"><div class="card"><div class="card-body">
+    <div class="small text-muted">Without video</div>
+    <div class="h4 mb-0">@Model.LessonsWithoutVideo</div>
+  </div></div></div>
+  <div class="col-6 col-md-3 mb-3"><div class="card"><div class="card-body">
+    <div class="small text-muted">Bookings (month)</div>
+    <div class="h4 mb-0">@Model.BookingsThisMonth</div>
+  </div></div></div>
 </div>
 
-<form asp-action="LoadDemoCourses" method="post" class="mb-3" onsubmit="return confirm('Load demo courses only if empty?');">
-  @Html.AntiForgeryToken()
-  <button type="submit" class="btn btn-primary">Load demo courses</button>
-</form>
-<h2 class="h6 text-muted text-uppercase mb-3">Админ действия (само за теб)</h2>
-<div class="row g-3">
-  <div class="col-md-4">
-    <a asp-action="Users" class="card border-0 shadow-sm p-4 h-100 text-decoration-none admin-action-card">
-      <div class="fs-3 text-primary mb-2"><i class="bi bi-people"></i></div>
-      <div class="fw-bold text-body">Потребители / Teachers</div>
-      <div class="small text-muted">Направи Teacher по email, Admin роли</div>
+<div class="alert alert-secondary mb-4">
+  Courses, sections, lessons, exercises and prices are seeded in the database via
+  <strong>EF migrations</strong> (<code>Update-Database</code>), not only from this panel.
+  If the catalog is empty after migrate, check that migration <em>SeedCatalog</em> was applied.
+  Optional fallback:
+  <form asp-action="LoadDemoCourses" method="post" class="d-inline"
+        onsubmit="return confirm('Only if DB catalog is empty. Continue?');">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-sm btn-outline-secondary">Fallback: Load demo in-app</button>
+  </form>
+</div>
+
+<h2 class="h6 text-muted text-uppercase mb-3">Manage</h2>
+<div class="row">
+  <div class="col-md-4 mb-3">
+    <a asp-action="Users" class="card h-100 text-decoration-none">
+      <div class="card-body">
+        <div class="font-weight-bold text-dark">Users / Teachers</div>
+        <div class="small text-muted">Assign Teacher or Admin by email</div>
+      </div>
     </a>
   </div>
-  <div class="col-md-4">
-    <a asp-action="Plans" class="card border-0 shadow-sm p-4 h-100 text-decoration-none admin-action-card">
-      <div class="fs-3 text-primary mb-2"><i class="bi bi-credit-card"></i></div>
-      <div class="fw-bold text-body">Цена Math Enthusiast</div>
-      <div class="small text-muted">Месечна / годишна цена</div>
+  <div class="col-md-4 mb-3">
+    <a asp-action="Plans" class="card h-100 text-decoration-none">
+      <div class="card-body">
+        <div class="font-weight-bold text-dark">Subscription prices</div>
+        <div class="small text-muted">Free &amp; Math Enthusiast — edit / delete</div>
+      </div>
     </a>
   </div>
-  <div class="col-md-4">
-    <a asp-action="SessionPlans" class="card border-0 shadow-sm p-4 h-100 text-decoration-none admin-action-card">
-      <div class="fs-3 text-primary mb-2"><i class="bi bi-clock"></i></div>
-      <div class="fw-bold text-body">1h / 1.5h / 2h</div>
-      <div class="small text-muted">Цени за частни уроци</div>
+  <div class="col-md-4 mb-3">
+    <a asp-action="SessionPlans" class="card h-100 text-decoration-none">
+      <div class="card-body">
+        <div class="font-weight-bold text-dark">Private lesson prices</div>
+        <div class="small text-muted">1h / 1.5h / 2h — edit / delete</div>
+      </div>
     </a>
   </div>
-  <div class="col-md-4">
-    <a asp-action="PublicSessions" class="card border-0 shadow-sm p-4 h-100 text-decoration-none admin-action-card">
-      <div class="fs-3 text-primary mb-2"><i class="bi bi-discord"></i></div>
-      <div class="fw-bold text-body">Discord сесии</div>
-      <div class="small text-muted">Публични Q&amp;A</div>
+  <div class="col-md-4 mb-3">
+    <a asp-controller="CourseAdmin" asp-action="Index" class="card h-100 text-decoration-none">
+      <div class="card-body">
+        <div class="font-weight-bold text-dark">Courses content</div>
+        <div class="small text-muted">Create, edit, delete courses / sections / lessons</div>
+      </div>
     </a>
   </div>
-  <div class="col-md-4">
-    <a asp-action="Bookings" class="card border-0 shadow-sm p-4 h-100 text-decoration-none admin-action-card">
-      <div class="fs-3 text-primary mb-2"><i class="bi bi-calendar-check"></i></div>
-      <div class="fw-bold text-body">Всички резервации</div>
-      <div class="small text-muted">Частни уроци</div>
+  <div class="col-md-4 mb-3">
+    <a asp-action="PublicSessions" class="card h-100 text-decoration-none">
+      <div class="card-body">
+        <div class="font-weight-bold text-dark">Discord sessions</div>
+        <div class="small text-muted">Public Q&amp;A — add / remove</div>
+      </div>
     </a>
   </div>
-  <div class="col-md-4">
-    <a asp-action="Donations" class="card border-0 shadow-sm p-4 h-100 text-decoration-none admin-action-card">
-      <div class="fs-3 text-primary mb-2"><i class="bi bi-heart"></i></div>
-      <div class="fw-bold text-body">Дарения</div>
-      <div class="small text-muted">Списък и суми</div>
-    </a>
-  </div>
-  <div class="col-md-4">
-    <a asp-controller="CourseAdmin" asp-action="Index" class="card border-0 shadow-sm p-4 h-100 text-decoration-none admin-action-card">
-      <div class="fs-3 text-success mb-2"><i class="bi bi-collection-play"></i></div>
-      <div class="fw-bold text-body">Курсове CRUD</div>
-      <div class="small text-muted">Уроци, видеа, упражнения</div>
+  <div class="col-md-4 mb-3">
+    <a asp-action="Bookings" class="card h-100 text-decoration-none">
+      <div class="card-body">
+        <div class="font-weight-bold text-dark">All bookings</div>
+        <div class="small text-muted">Private lesson reservations</div>
+      </div>
     </a>
   </div>
 </div>
-<style>
-.admin-action-card { transition: transform .12s, box-shadow .12s; color: inherit; }
-.admin-action-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,.12) !important; }
-</style>

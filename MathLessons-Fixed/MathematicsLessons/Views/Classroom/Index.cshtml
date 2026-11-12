@@ -1,50 +1,67 @@
 @model MathematicsLessons.Models.ClassroomPage
 @{
-    ViewData["Title"] = "Курсове";
+    ViewData["Title"] = "Courses";
 }
-<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
     <div>
-        <h1 class="h3 fw-bold mb-1">Курсове по математика</h1>
-        <p class="text-muted mb-0 small">
+        <h1 class="page-title mb-1">Courses</h1>
+        <p class="text-muted mb-0">
             @if (Model.IsSubscribed)
             {
-                <span>Напредък: @Model.TotalCompleted / @Model.TotalLessons урока</span>
+                <span class="badge-soft green">Math Enthusiast</span>
+                <span class="small ml-1">Full access</span>
             }
             else
             {
-                <span>Free: само първият Beginner урок. Math Enthusiast отключва всички.</span>
+                <span class="badge-soft">Free</span>
+                <span class="small ml-1">First Beginner lesson only —
+                    <a asp-controller="Subscription" asp-action="Plans">see prices</a></span>
             }
         </p>
     </div>
-    @if (!Model.IsSubscribed)
-    {
-        <a class="btn btn-primary" asp-controller="Subscription" asp-action="Plans">Math Enthusiast</a>
-    }
+    <a class="btn btn-outline-secondary btn-sm" asp-controller="Subscription" asp-action="Plans">Subscription prices</a>
 </div>
 
-<div class="row g-3">
-@foreach (var block in Model.Levels)
+@if (Model.Levels == null || !Model.Levels.Any())
 {
-    var locked = !block.IsUnlocked;
-    var accent = block.Level.SortOrder switch { 1 => "success", 2 => "primary", 3 => "warning", _ => "danger" };
-    <div class="col-md-6 col-lg-3">
-        <a asp-action="Level" asp-route-id="@block.Level.Id" class="text-decoration-none">
-            <div class="card border-0 shadow-sm h-100 course-card @(locked ? "opacity-75" : "")">
-                <div class="card-body p-4">
-                    <span class="badge bg-@accent mb-2">@block.Level.Name</span>
-                    @if (locked) { <i class="bi bi-lock-fill text-muted float-end"></i> }
-                    <div class="small text-muted mb-2">@block.Level.GradeRange</div>
-                    <p class="small mb-3" style="min-height:3rem">@block.Level.Description</p>
-                    <div class="progress mb-2" style="height:6px">
-                        <div class="progress-bar" style="width:@(block.Percent)%"></div>
-                    </div>
-                    <div class="d-flex justify-content-between small text-muted">
-                        <span>@block.Completed / @block.Total урока</span>
-                        @if (block.HasCertificate) { <span class="text-success"><i class="bi bi-award"></i></span> }
-                    </div>
-                </div>
-            </div>
-        </a>
+    <div class="alert alert-warning">
+        No courses yet.
+        @if (User.IsInRole("Admin"))
+        {
+            <span>Open Admin → <strong>Load demo courses + prices</strong>.</span>
+        }
     </div>
 }
-</div>
+else
+{
+    <div class="row">
+    @foreach (var block in Model.Levels)
+    {
+        var locked = !block.IsUnlocked;
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card card-level h-100">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between">
+                        <span class="badge-soft">@block.Level.Name</span>
+                        @if (locked) { <span class="small text-muted">Locked</span> }
+                    </div>
+                    <div class="small text-muted mt-1">@block.Level.GradeRange</div>
+                    <p class="small mt-2 mb-3">@block.Level.Description</p>
+                    <div class="progress mb-2">
+                        <div class="progress-bar" style="width:@(block.Percent)%"></div>
+                    </div>
+                    <div class="small text-muted mb-3">@block.Completed / @block.Total lessons</div>
+                    @if (locked)
+                    {
+                        <a class="btn btn-sm btn-primary mt-auto" asp-controller="Subscription" asp-action="Plans">Unlock — see price</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-sm btn-primary mt-auto" asp-action="Level" asp-route-id="@block.Level.Id">Open course</a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    </div>
+}

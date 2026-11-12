@@ -106,7 +106,7 @@ public class BookingController : Controller
         return View();
     }
 
-    /// JSON: how many bookings on a day (for calendar UI).
+    /// <summary>JSON: how many bookings on a day (for calendar UI).</summary>
     [HttpGet]
     public async Task<IActionResult> DayStatus(string date)
     {

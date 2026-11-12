@@ -71,5 +71,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
             e.HasOne(a => a.Schedule).WithMany(s => s.Attendances).HasForeignKey(a => a.ScheduleId).OnDelete(DeleteBehavior.Cascade);
             e.HasIndex(a => new { a.UserId, a.ScheduleId }).IsUnique();
         });
+
+        CatalogSeed.Apply(builder);
     }
 }

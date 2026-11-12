@@ -146,6 +146,19 @@ public class AdminController : Controller
         return RedirectToAction(nameof(Plans));
     }
 
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeletePlan(int id)
+    {
+        var plan = await _ctx.Subs.FindAsync(id);
+        if (plan != null)
+        {
+            _ctx.Subs.Remove(plan);
+            await _ctx.SaveChangesAsync();
+            TempData["Success"] = "Plan deleted.";
+        }
+        return RedirectToAction(nameof(Plans));
+    }
+
     [HttpGet]
     public async Task<IActionResult> SessionPlans() =>
         View(await _ctx.AppointmentPlans.OrderBy(p => p.DurationMinutes).ToListAsync());
@@ -338,21 +351,57 @@ public class AdminController : Controller
         int lo = order * 10;
         foreach (var title in titles)
         {
-            _ctx.Lessons.Add(new Lesson
+            var lesson = new Lesson
             {
                 LevelId = levelId,
                 TopicId = topic.Id,
                 Title = title,
-                Content = $"Урок: {title}",
+                Content = BuildLessonContent(title),
                 Video = video,
                 SortOrder = lo++,
-                DurationMinutes = 12,
-                PointsReward = 20
+                DurationMinutes = 15,
+                PointsReward = 25
+            };
+            _ctx.Lessons.Add(lesson);
+            await _ctx.SaveChangesAsync();
+
+            // materials: 2 practice exercises per lesson
+            _ctx.Exercises.Add(new Exercise
+            {
+                LessonId = lesson.Id,
+                Question = $"Кратко: какво научи от „{title}“? (напиши ключова дума от заглавието)",
+                Solution = title.Split(' ').FirstOrDefault() ?? "ok",
+                Hint = "Погледни заглавието на урока.",
+                PointsReward = 10
             });
+            _ctx.Exercises.Add(new Exercise
+            {
+                LessonId = lesson.Id,
+                Question = "Готов ли си за следващия урок? (напиши yes или да)",
+                Solution = "yes",
+                Hint = "Отговори с yes или да",
+                PointsReward = 5
+            });
+            await _ctx.SaveChangesAsync();
         }
-        await _ctx.SaveChangesAsync();
     }
+
+    private static string BuildLessonContent(string title)
+    {
+        return $"Урок: {title}.
+
+" +
+               "1) Гледай видеото докрай.
+" +
+               "2) Прочети кратките бележки.
+" +
+               "3) Реши упражненията под видеото — при грешка гледай урока отново.
+" +
+               "4) След успех се отключва следващият урок в секцията.";
+    }
+
 }
+
 
 public class AdminStatsVm
 {

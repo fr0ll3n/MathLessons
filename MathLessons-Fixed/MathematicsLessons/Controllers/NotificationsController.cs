@@ -7,7 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MathematicsLessons.Controllers;
 
+/// <summary>
 /// Logic: list user notifications, mark one or all as read.
+/// </summary>
 [Authorize]
 public class NotificationsController : Controller
 {

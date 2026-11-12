@@ -7,8 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MathematicsLessons.Controllers;
 
+/// <summary>
 /// Alternate course browse API (logic): dashboard by subscription, lessons by level, lesson details.
 /// Complements ClassroomController (which has unlock rules).
+/// </summary>
 public class CoursesController : Controller
 {
     private readonly ApplicationDbContext _context;

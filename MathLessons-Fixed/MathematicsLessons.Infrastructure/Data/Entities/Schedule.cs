@@ -22,11 +22,11 @@ public class Schedule
 
     public bool IsPublic { get; set; } = true;
 
-    /// <summary>Discord server invite, e.g. https://discord.gg/xxxx</summary>
+    /// Discord server invite, e.g. https://discord.gg/xxxx
     [MaxLength(400)]
     public string? DiscordInviteUrl { get; set; }
 
-    /// <summary>Channel name, e.g. #public-sessions</summary>
+    /// Channel name, e.g. #public-sessions
     [MaxLength(80)]
     public string? DiscordChannel { get; set; }
 

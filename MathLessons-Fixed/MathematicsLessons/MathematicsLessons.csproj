@@ -8,17 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Views\Chat\**" />
-    <Compile Remove="Views\Members\**" />
-    <Content Remove="Views\Chat\**" />
-    <Content Remove="Views\Members\**" />
-    <EmbeddedResource Remove="Views\Chat\**" />
-    <EmbeddedResource Remove="Views\Members\**" />
-    <None Remove="Views\Chat\**" />
-    <None Remove="Views\Members\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.18" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.18" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.18" />
@@ -37,8 +26,10 @@
 
   <ItemGroup>
     <Folder Include="Views\Classroom\" />
+    <Folder Include="Views\Chat\" />
     <Folder Include="Views\Account\" />
     <Folder Include="Views\Booking\" />
+    <Folder Include="Views\Members\" />
     <Folder Include="Views\Teacher\" />
     <Folder Include="Views\Subscription\" />
     <Folder Include="Views\Sessions\" />
