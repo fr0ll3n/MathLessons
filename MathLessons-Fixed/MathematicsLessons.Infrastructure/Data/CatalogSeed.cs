@@ -3,10 +3,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MathematicsLessons.Infrastructure.Data;
 
-/// Static catalog seed — applied through EF migrations (Update-Database).
+/// <summary>
+/// Catalog + prices seed for Update-Database (HasData).
+/// Every lesson gets a demo video; URLs rotate so sections look different.
+/// </summary>
 public static class CatalogSeed
 {
-    public const string SampleVideo = "https://www.w3schools.com/html/mov_bbb.mp4";
+    public static readonly string[] DemoVideos =
+    {
+        "https://www.w3schools.com/html/mov_bbb.mp4",
+        "https://www.w3schools.com/html/movie.mp4",
+        "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+        "https://filesamples.com/samples/video/mp4/sample_640x360.mp4",
+        "https://download.samplelib.com/mp4/sample-5s.mp4",
+        "https://download.samplelib.com/mp4/sample-10s.mp4",
+        "https://download.samplelib.com/mp4/sample-15s.mp4",
+        "https://download.samplelib.com/mp4/sample-20s.mp4",
+    };
+
+    private static string VideoFor(int lessonId) =>
+        DemoVideos[(lessonId - 1) % DemoVideos.Length];
 
     public static void Apply(ModelBuilder modelBuilder)
     {
@@ -43,7 +59,6 @@ public static class CatalogSeed
             new Level { Id = 3, Name = "Advanced", GradeRange = "8 – 12 клас", SortOrder = 3, Description = "Алгебра, функции, стереометрия към матура." },
             new Level { Id = 4, Name = "College", GradeRange = "Висша математика част 1–3", SortOrder = 4, Description = "Анализ, линейна алгебра, вероятности." });
 
-        // Topics: Id, LevelId, Name, Description, SortOrder
         var topics = new List<Topic>();
         var lessons = new List<Lesson>();
         var exercises = new List<Exercise>();
@@ -63,14 +78,20 @@ public static class CatalogSeed
             int order = sort * 10;
             foreach (var title in titles)
             {
+                var lessonId = lid++;
                 var lesson = new Lesson
                 {
-                    Id = lid++,
+                    Id = lessonId,
                     LevelId = levelId,
                     TopicId = t.Id,
                     Title = title,
-                    Content = $"Урок: {title}.\n\n1) Гледай видеото докрай.\n2) Прочети бележките.\n3) Реши упражненията — при грешка гледай отново.\n4) След успех се отключва следващият урок.",
-                    Video = SampleVideo,
+                    Content =
+                        $"Урок: {title}.\n\n" +
+                        "1) Гледай видеото докрай.\n" +
+                        "2) Прочети кратките бележки.\n" +
+                        "3) Реши упражненията под видеото — при грешка гледай урока отново.\n" +
+                        "4) След успех се отключва следващият урок в секцията.",
+                    Video = VideoFor(lessonId),
                     SortOrder = order++,
                     DurationMinutes = 15,
                     PointsReward = 25
@@ -98,7 +119,7 @@ public static class CatalogSeed
             }
         }
 
-        // Beginner grades 1-4
+        // Beginner
         Topic(1, "1 клас — Числа и броене", 11, "Числа до 10", "Сравняване на числа", "Числова ос");
         Topic(1, "1 клас — Събиране и изваждане", 12, "Събиране до 10", "Изваждане до 10", "Задачи с текст");
         Topic(1, "1 клас — Фигури", 13, "Квадрат и кръг", "Триъгълник", "Разпознаване на фигури");
@@ -112,7 +133,7 @@ public static class CatalogSeed
         Topic(1, "4 клас — Дроби", 42, "Какво е дроб", "Единични дроби", "Сравняване на дроби");
         Topic(1, "4 клас — Лице", 43, "Лице на правоъгълник", "Единици за лице", "Задачи с чертеж");
 
-        // Intermediate 5-7
+        // Intermediate
         Topic(2, "5 клас — Дроби и десетични", 51, "Събиране на дроби", "Десетични числа", "Преобразуване");
         Topic(2, "5 клас — Уравнения", 52, "Неизвестно число", "Прости уравнения", "Проверка");
         Topic(2, "5 клас — Геометрия", 53, "Ъгли", "Триъгълник — свойства", "Лице на триъгълник");
@@ -123,7 +144,7 @@ public static class CatalogSeed
         Topic(2, "7 клас — Уравнения", 72, "Линейни уравнения", "Неравенства", "Текстови задачи");
         Topic(2, "7 клас — Геометрия", 73, "Питагорова теорема — увод", "Подобни фигури", "Лица на многоъгълници");
 
-        // Advanced 8-12
+        // Advanced
         Topic(3, "8 клас — Алгебра", 81, "Степенуване", "Многочлени", "Съкратени формули");
         Topic(3, "8 клас — Функции", 82, "Какво е функция", "Линейна функция", "Графика");
         Topic(3, "8 клас — Геометрия", 83, "Вектори — идея", "Окръжност и ъгли", "Лица и периметри");

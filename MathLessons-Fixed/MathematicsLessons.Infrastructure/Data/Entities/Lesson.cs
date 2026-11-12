@@ -15,7 +15,7 @@ public class Lesson
     [Required]
     public string Content { get; set; } = "";
 
-    [MaxLength(400)]
+    [MaxLength(500)]
     public string? Video { get; set; }
 
     [Range(1, 1000)]
